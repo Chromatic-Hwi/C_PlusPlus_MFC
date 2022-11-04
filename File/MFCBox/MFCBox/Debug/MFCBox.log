@@ -1,0 +1,7 @@
+﻿  MFCBoxDlg.cpp
+c:\users\auseh\onedrive\문서\github\c_plusplus_mfc\file\mfcbox\mfcbox\mfcboxdlg.cpp(155): error C2653: 'CExamMFCDlg': is not a class or namespace name
+c:\users\auseh\onedrive\문서\github\c_plusplus_mfc\file\mfcbox\mfcbox\mfcboxdlg.cpp(159): error C2248: 'CWnd::WindowProc': cannot access protected member declared in class 'CWnd'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afxwin.h(2995): note: see declaration of 'CWnd::WindowProc'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afxwin.h(2176): note: see declaration of 'CWnd'
+c:\users\auseh\onedrive\문서\github\c_plusplus_mfc\file\mfcbox\mfcbox\mfcboxdlg.cpp(159): error C2352: 'CWnd::WindowProc': illegal call of non-static member function
+  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afxwin.h(2995): note: see declaration of 'CWnd::WindowProc'
