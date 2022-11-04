@@ -64,6 +64,8 @@ BEGIN_MESSAGE_MAP(CMFCBoxDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_EN_CHANGE(IDC_NEW1, &CMFCBoxDlg::OnEnChangeNew1)
+	ON_BN_CLICKED(IDC_SHOW_STR_BTN, &CMFCBoxDlg::OnBnClickedShowStrBtn)
 END_MESSAGE_MAP()
 
 
@@ -152,9 +154,31 @@ HCURSOR CMFCBoxDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+/*
 LRESULT CExamMFCDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WM_LBUTTONDOWN) {
 	}
 	return CDialogEx::WindowProc(message, wParam, lParam);
+}*/
+
+void CMFCBoxDlg::OnEnChangeNew1()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CMFCBoxDlg::OnBnClickedShowStrBtn()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	wchar_t str[64];
+
+	GetDlgItemText(IDC_NEW1, str, 64);
+
+	MessageBox(str);
 }
