@@ -68,7 +68,9 @@ BEGIN_MESSAGE_MAP(CMoveItemDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_LBN_SELCHANGE(IDC_RIGHT_LIST, &CMoveItemDlg::OnLbnSelchangeRightList)
+//	ON_LBN_SELCHANGE(IDC_RIGHT_LIST, &CMoveItemDlg::OnLbnSelchangeRightList)
+	ON_LBN_DBLCLK(IDC_LEFT_LIST, &CMoveItemDlg::OnDblclkLeftList)
+	ON_LBN_DBLCLK(IDC_RIGHT_LIST, &CMoveItemDlg::OnDblclkRightList)
 END_MESSAGE_MAP()
 
 
@@ -176,7 +178,37 @@ void CMoveItemDlg::OnLbnSelchangeList2()
 }
 
 
-void CMoveItemDlg::OnLbnSelchangeRightList()
+//void CMoveItemDlg::OnLbnSelchangeRightList()
+//{
+//	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//}
+
+
+void CMoveItemDlg::OnDblclkLeftList()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// m_left_list에서 선택된 항목의 인덱스 획득.
+	int index = m_left_list.GetCurSel();
+	CString str;
+
+	// m_left_list의 index 위치에 있는 문자열을 str 객체에 저장.
+	m_left_list.GetText(index, str);
+
+	// m_left_list의 index 위치에 있는 문자열 제거.
+	m_left_list.DeleteString(index);
+
+	//m_right_list의 목록 끝에 str에 저장되어 있는  문자열 추가.
+	m_right_list.InsertString(-1, str);
+}
+
+
+void CMoveItemDlg::OnDblclkRightList()
+{
+	int index = m_right_list.GetCurSel();
+	CString str;
+
+	m_right_list.GetText(index, str);
+
+	m_right_list.DeleteString(index);
+
+	m_left_list.InsertString(-1, str);
 }

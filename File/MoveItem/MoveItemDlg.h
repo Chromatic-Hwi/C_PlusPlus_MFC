@@ -34,6 +34,8 @@ protected:
 public:
 	afx_msg void OnLbnSelchangeList2();
 	CListBox m_left_list;
-	afx_msg void OnLbnSelchangeRightList();
+//	afx_msg void OnLbnSelchangeRightList();
 	CListBox m_right_list;
+	afx_msg void OnDblclkLeftList();
+	afx_msg void OnDblclkRightList();
 };
