@@ -67,6 +67,8 @@ BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_COMMAND(ID_FILE_OPEN32771, &CViewerTempDlg::OnMenuFileOpen)
 	ON_BN_CLICKED(IDOK, &CViewerTempDlg::OnBnClickedOk)
+	ON_WM_MOUSEMOVE()
+	ON_BN_CLICKED(IDCANCEL, &CViewerTempDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -151,13 +153,13 @@ void CViewerTempDlg::OnPaint()
 		CPaintDC dc(this);
 		m_image.Draw(dc, 0, 0);
 		*/
-		CPoint m_ptMouse;
-
+		
+		/*
 		CPaintDC dc(this);
 		CString strData = _T("");
 		strData.Format(_T("X:%03d, Y:%03d"), m_ptMouse.x, m_ptMouse.y);
-
 		dc.TextOutW(10, 10, strData);
+		*/
 	}
 }
 
@@ -167,8 +169,6 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-
 
 void CViewerTempDlg::OnMenuFileOpen()
 {
@@ -183,16 +183,27 @@ void CViewerTempDlg::OnMenuFileOpen()
 		int w, h;
 		w = m_image2.GetWidth();
 		h = m_image2.GetHeight();
+		RedrawWindow();
 		CPaintDC dc(this);
 		//CCleintDC dc(this); 도 똑같이 동작함.
 		m_image2.Draw(dc, 0, 0, w, h);
-
-		//GetDC와 ReleaseDC 위주로 알아볼 것!
 	}
 }
 
 void CViewerTempDlg::OnBnClickedOk()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	//CDialogEx::OnOK();
+	RedrawWindow();
+}
+
+void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	m_ptMouse = point;
+	//RedrawWindow();
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+void CViewerTempDlg::OnBnClickedCancel()
+{
+	CDialogEx::OnCancel();
 }
