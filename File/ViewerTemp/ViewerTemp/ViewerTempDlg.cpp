@@ -151,6 +151,13 @@ void CViewerTempDlg::OnPaint()
 		CPaintDC dc(this);
 		m_image.Draw(dc, 0, 0);
 		*/
+		CPoint m_ptMouse;
+
+		CPaintDC dc(this);
+		CString strData = _T("");
+		strData.Format(_T("X:%03d, Y:%03d"), m_ptMouse.x, m_ptMouse.y);
+
+		dc.TextOutW(10, 10, strData);
 	}
 }
 
@@ -173,11 +180,16 @@ void CViewerTempDlg::OnMenuFileOpen()
 		CString filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
 		m_image2.Load(filepath);
+		int w, h;
+		w = m_image2.GetWidth();
+		h = m_image2.GetHeight();
 		CPaintDC dc(this);
-		m_image2.Draw(dc, 0, 0);
+		//CCleintDC dc(this); 도 똑같이 동작함.
+		m_image2.Draw(dc, 0, 0, w, h);
+
+		//GetDC와 ReleaseDC 위주로 알아볼 것!
 	}
 }
-
 
 void CViewerTempDlg::OnBnClickedOk()
 {
