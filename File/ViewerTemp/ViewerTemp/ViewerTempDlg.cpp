@@ -184,24 +184,31 @@ void ImagePrint(int mode)
 	switch (mode)
 	{
 	case 0:// 일반 출력
-		// TODO
+	{
+		
+	}
 		break;
 
 	case 1:// 원본 배율 출력
-		// TODO
+	{
+
+	}
 		break;
 
 	case 2: // 휠 가변 배율 출력
-		// TODO
+	{
+	
+	}
 		break;
 
 	case 3: // 버튼 가변 배율 출력
-		// TODO
+	{
+	
+	}
 		break;
 	}
-
-	
 }
+
 void CViewerTempDlg::OnMenuFileOpen()
 {
 	CFileDialog dlg(TRUE);
@@ -210,23 +217,23 @@ void CViewerTempDlg::OnMenuFileOpen()
 	if (ok == IDOK)
 	{
 		RedrawWindow();
+		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 
 		CPaintDC dc(this);
 		CRect Rect;
 		GetClientRect(&Rect);
-		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
-		int rect_ratio = rect_height / rect_width;
 
-		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
 		m_image2.Load(filepath);
+
+		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+		int rect_ratio = rect_height / rect_width;
 
 		double img_width, img_height;
 		img_width = m_image2.GetWidth();
 		img_height = m_image2.GetHeight();
 		double img_ratio = img_height / img_width;
-		
-		//m_image2.Draw(dc, 0, 0, img_width - 160, img_height - 80); // 현재 창 크기에 맞춰서 비율 무시하고 출력.
+
 		double show_w, show_h;
 
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
@@ -246,10 +253,12 @@ void CViewerTempDlg::OnMenuFileOpen()
 	}
 }
 
+
 void CViewerTempDlg::OnBnClickedOk()
 {
 	RedrawWindow();
 }
+
 
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -263,10 +272,12 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 	m_loc_list.SetCurSel(m_loc_list.GetCount() - 1);
 }
 
+
 void CViewerTempDlg::OnMenuFileReset()
 {
 	RedrawWindow();
 }
+
 
 BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
@@ -281,6 +292,38 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	m_ratio_list.AddString(intData);
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 	
+	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+
+	CImage m_image2;
+	m_image2.Load(filepath);
+
+	int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+	int rect_ratio = rect_height / rect_width;
+
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double show_w, show_h;
+
+	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
+	{
+		show_w = (rect_height - 90) * img_ratio;
+		show_h = rect_height - 90;
+		origin_w = show_w, origin_h = show_h;
+		m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+	}
+	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+	{
+		show_w = rect_width - 160;
+		show_h = (rect_width - 160) * img_ratio;
+		origin_w = show_w, origin_h = show_h;
+		m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+	}
+
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 

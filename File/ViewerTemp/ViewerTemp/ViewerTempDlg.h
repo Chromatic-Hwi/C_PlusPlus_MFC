@@ -1,5 +1,4 @@
-﻿
-// ViewerTempDlg.h: 헤더 파일
+﻿// ViewerTempDlg.h: 헤더 파일
 //
 
 #pragma once
@@ -13,6 +12,7 @@ public:
 	CViewerTempDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 	float m_pos = 1;
 	double origin_w, origin_h;
+	double new_w, new_h;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -26,7 +26,7 @@ private:
 	CPoint m_ptMouse;
 	CListBox m_loc_list;
 	CListBox m_ratio_list;
-	CString filepath;
+	
 
 // 구현입니다.
 protected:
@@ -46,6 +46,7 @@ public:
 
 	CImage m_image;
 	CImage m_image2;
+	CString filepath;
 
 	afx_msg void OnMenuFileReset();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
