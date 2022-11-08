@@ -26,6 +26,7 @@ private:
 	CPoint m_ptMouse;
 	CListBox m_loc_list;
 	CListBox m_ratio_list;
+	CString filepath;
 
 // 구현입니다.
 protected:
@@ -51,4 +52,6 @@ public:
 	afx_msg void OnBnClickedOriginBtn();
 	afx_msg void OnBnClickedUpBtn();
 	afx_msg void OnBnClickedDownBtn();
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

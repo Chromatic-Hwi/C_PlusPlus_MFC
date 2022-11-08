@@ -76,6 +76,8 @@ ON_WM_MOUSEWHEEL()
 ON_BN_CLICKED(IDC_ORIGIN_BTN, &CViewerTempDlg::OnBnClickedOriginBtn)
 ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
+ON_WM_HSCROLL()
+ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -177,6 +179,29 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void ImagePrint(int mode)
+{
+	switch (mode)
+	{
+	case 0:// 일반 출력
+		// TODO
+		break;
+
+	case 1:// 원본 배율 출력
+		// TODO
+		break;
+
+	case 2: // 휠 가변 배율 출력
+		// TODO
+		break;
+
+	case 3: // 버튼 가변 배율 출력
+		// TODO
+		break;
+	}
+
+	
+}
 void CViewerTempDlg::OnMenuFileOpen()
 {
 	CFileDialog dlg(TRUE);
@@ -192,7 +217,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 		int rect_ratio = rect_height / rect_width;
 
-		CString filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
+		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
 		m_image2.Load(filepath);
 
@@ -203,7 +228,6 @@ void CViewerTempDlg::OnMenuFileOpen()
 		
 		//m_image2.Draw(dc, 0, 0, img_width - 160, img_height - 80); // 현재 창 크기에 맞춰서 비율 무시하고 출력.
 		double show_w, show_h;
-		double origin_w, origin_h;
 
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
 		{
@@ -283,8 +307,25 @@ void CViewerTempDlg::OnBnClickedOriginBtn()
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 
 	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	m_image2.Draw(dc, 0, 0, origin_w, origin_h);
+}
 
-	//m_image2.Draw(dc, 0, 0, 100, 100);
+void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+}
 
 
+void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
