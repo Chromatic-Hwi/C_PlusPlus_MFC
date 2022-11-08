@@ -7,6 +7,7 @@
 #include "ViewerTemp.h"
 #include "ViewerTempDlg.h"
 #include "afxdialogex.h"
+#include "Resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,16 +61,21 @@ void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LOC_LIST, m_loc_list);
+	DDX_Control(pDX, IDC_RATIO_LIST, m_ratio_list);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
-	ON_WM_SYSCOMMAND()
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_COMMAND(ID_FILE_OPEN32771, &CViewerTempDlg::OnMenuFileOpen)
-	ON_BN_CLICKED(IDOK, &CViewerTempDlg::OnBnClickedOk)
-	ON_WM_MOUSEMOVE()
-	ON_COMMAND(ID_FILE_RESET, &CViewerTempDlg::OnMenuFileReset)
+ON_WM_SYSCOMMAND()
+ON_WM_PAINT()
+ON_WM_QUERYDRAGICON()
+ON_COMMAND(ID_FILE_OPEN32771, &CViewerTempDlg::OnMenuFileOpen)
+ON_BN_CLICKED(IDOK, &CViewerTempDlg::OnBnClickedOk)
+ON_WM_MOUSEMOVE()
+ON_COMMAND(ID_FILE_RESET, &CViewerTempDlg::OnMenuFileReset)
+ON_WM_MOUSEWHEEL()
+ON_BN_CLICKED(IDC_ORIGIN_BTN, &CViewerTempDlg::OnBnClickedOriginBtn)
+ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
+ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
 END_MESSAGE_MAP()
 
 
@@ -178,11 +184,13 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 	if (ok == IDOK)
 	{
+		RedrawWindow();
+
 		CPaintDC dc(this);
 		CRect Rect;
 		GetClientRect(&Rect);
 		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
-		//int rect_ratio = rect_height / rect_width;
+		int rect_ratio = rect_height / rect_width;
 
 		CString filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
@@ -192,32 +200,36 @@ void CViewerTempDlg::OnMenuFileOpen()
 		img_width = m_image2.GetWidth();
 		img_height = m_image2.GetHeight();
 		double img_ratio = img_height / img_width;
-
-		//RedrawWindow(); // 이 라인을 주석 처리하면 윈도우창의 움직임 감지시마다 초기화됨.
 		
 		//m_image2.Draw(dc, 0, 0, img_width - 160, img_height - 80); // 현재 창 크기에 맞춰서 비율 무시하고 출력.
-		
+		double show_w, show_h;
+		double origin_w, origin_h;
+
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
 		{
-			m_image2.Draw(dc, 0, 0, (rect_height - 90) * img_ratio, rect_height - 90);
+			show_w = (rect_height - 90) * img_ratio;
+			show_h = rect_height - 90;
+			origin_w = show_w, origin_h = show_h;
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 		{
-			m_image2.Draw(dc, 0, 0, rect_width - 160, (rect_width - 160) * img_ratio);
+			show_w = rect_width - 160;
+			show_h = (rect_width - 160) * img_ratio;
+			origin_w = show_w, origin_h = show_h;
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 	}
 }
 
 void CViewerTempDlg::OnBnClickedOk()
 {
-	//CDialogEx::OnOK();
 	RedrawWindow();
 }
 
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	m_ptMouse = point;
-	//RedrawWindow();
 	CDialogEx::OnMouseMove(nFlags, point);
 	CString strData = _T("");
 	strData.Format(_T("Cursor >> X:%03d | Y:%03d"), m_ptMouse.x, m_ptMouse.y);
@@ -225,10 +237,54 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 	m_loc_list.DeleteString(0);
 	m_loc_list.AddString(strData);
 	m_loc_list.SetCurSel(m_loc_list.GetCount() - 1);
-	
 }
 
 void CViewerTempDlg::OnMenuFileReset()
 {
 	RedrawWindow();
+}
+
+BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	if (zDelta > 0)
+	{if(m_pos < 40) m_pos += 0.1f;}
+	else
+	{if (m_pos > 1.0) m_pos -= 0.1f;}
+	
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+	
+	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+void CViewerTempDlg::OnBnClickedUpBtn()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CViewerTempDlg::OnBnClickedDownBtn()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CViewerTempDlg::OnBnClickedOriginBtn()
+{
+	m_pos = 1.0f;
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+	RedrawWindow();
+
+	//m_image2.Draw(dc, 0, 0, 100, 100);
+
+
 }

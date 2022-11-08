@@ -11,6 +11,9 @@ class CViewerTempDlg : public CDialogEx
 // 생성입니다.
 public:
 	CViewerTempDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	float m_pos = 1;
+	double origin_w, origin_h;
+
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_VIEWERTEMP_DIALOG };
@@ -20,6 +23,9 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
 private:
+	CPoint m_ptMouse;
+	CListBox m_loc_list;
+	CListBox m_ratio_list;
 
 // 구현입니다.
 protected:
@@ -31,17 +37,18 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
 public:
 	afx_msg void OnMenuFileOpen();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLbnSelchangeList1();
-	afx_msg void OnBnClickedCancel();
-	afx_msg void OnBnClickedButton3();
 
 	CImage m_image;
 	CImage m_image2;
-	CPoint m_ptMouse;
-	CListBox m_loc_list;
+
 	afx_msg void OnMenuFileReset();
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	afx_msg void OnBnClickedOriginBtn();
+	afx_msg void OnBnClickedUpBtn();
+	afx_msg void OnBnClickedDownBtn();
 };
