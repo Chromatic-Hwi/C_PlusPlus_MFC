@@ -59,6 +59,7 @@ CViewerTempDlg::CViewerTempDlg(CWnd* pParent /*=nullptr*/)
 void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LOC_LIST, m_loc_list);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
@@ -68,8 +69,7 @@ BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
 	ON_COMMAND(ID_FILE_OPEN32771, &CViewerTempDlg::OnMenuFileOpen)
 	ON_BN_CLICKED(IDOK, &CViewerTempDlg::OnBnClickedOk)
 	ON_WM_MOUSEMOVE()
-	ON_BN_CLICKED(IDCANCEL, &CViewerTempDlg::OnBnClickedCancel)
-	ON_WM_SIZE()
+	ON_COMMAND(ID_FILE_RESET, &CViewerTempDlg::OnMenuFileReset)
 END_MESSAGE_MAP()
 
 
@@ -178,35 +178,33 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 	if (ok == IDOK)
 	{
+		CPaintDC dc(this);
 		CRect Rect;
 		GetClientRect(&Rect);
-		float width = Rect.right - Rect.left, height = Rect.bottom - Rect.top;
-		
-		/*
-		float rect_rate = width / height, img_rate = (float)m_image2.GetWidth() / (float)m_image2.GetHeight();
-
-		int priority_range =((img_rate > rect_rate && img_rate < 1) || (img_rate < rect_rate&& img_rate >= 1)) ? 1 : 0;
-		
-		if (priority_range) width = height * img_rate;
-		else height = width / img_rate;
-		Rect.left = 0;Rect.right = (int)width;Rect.top = 0;Rect.bottom = (int)height;
-		*/
+		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+		//int rect_ratio = rect_height / rect_width;
 
 		CString filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
 		m_image2.Load(filepath);
-		/*
-		int w, h;
-		w = m_image2.GetWidth();
-		h = m_image2.GetHeight();
-		*/
-		RedrawWindow();
-		CPaintDC dc(this);
-		//CCleintDC dc(this); 도 똑같이 동작함.
-		m_image2.Draw(dc, 0, 0, width-160, height-80);
 
+		double img_width, img_height;
+		img_width = m_image2.GetWidth();
+		img_height = m_image2.GetHeight();
+		double img_ratio = img_height / img_width;
 
+		//RedrawWindow(); // 이 라인을 주석 처리하면 윈도우창의 움직임 감지시마다 초기화됨.
 		
+		//m_image2.Draw(dc, 0, 0, img_width - 160, img_height - 80); // 현재 창 크기에 맞춰서 비율 무시하고 출력.
+		
+		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
+		{
+			m_image2.Draw(dc, 0, 0, (rect_height - 90) * img_ratio, rect_height - 90);
+		}
+		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+		{
+			m_image2.Draw(dc, 0, 0, rect_width - 160, (rect_width - 160) * img_ratio);
+		}
 	}
 }
 
@@ -221,23 +219,16 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 	m_ptMouse = point;
 	//RedrawWindow();
 	CDialogEx::OnMouseMove(nFlags, point);
+	CString strData = _T("");
+	strData.Format(_T("Cursor >> X:%03d | Y:%03d"), m_ptMouse.x, m_ptMouse.y);
+	
+	m_loc_list.DeleteString(0);
+	m_loc_list.AddString(strData);
+	m_loc_list.SetCurSel(m_loc_list.GetCount() - 1);
+	
 }
 
-void CViewerTempDlg::OnBnClickedCancel()
+void CViewerTempDlg::OnMenuFileReset()
 {
-	CDialogEx::OnCancel();
-}
-
-void CViewerTempDlg::OnSize(UINT nType, int cx, int cy)
-{
-	CDialogEx::OnSize(nType, cx, cy);
-	/*
-	CRect Rect;
-	GetClientRect(&Rect);
-	float width = Rect.right - Rect.left, height = Rect.bottom - Rect.top;
-
 	RedrawWindow();
-	CPaintDC dc(this);
-	m_image2.Draw(dc, 0, 0, width - 160, height - 80);
-	*/
 }

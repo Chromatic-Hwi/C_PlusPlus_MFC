@@ -20,9 +20,6 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
 private:
-	CImage m_image;
-	CImage m_image2;
-	CPoint m_ptMouse;
 
 // 구현입니다.
 protected:
@@ -41,5 +38,10 @@ public:
 	afx_msg void OnLbnSelchangeList1();
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButton3();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
+
+	CImage m_image;
+	CImage m_image2;
+	CPoint m_ptMouse;
+	CListBox m_loc_list;
+	afx_msg void OnMenuFileReset();
 };
