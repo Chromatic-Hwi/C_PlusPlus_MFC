@@ -21,6 +21,7 @@ public:
 
 private:
 	CImage m_image;
+	CImage m_image2;
 	CPoint m_ptMouse;
 
 // 구현입니다.
@@ -40,4 +41,5 @@ public:
 	afx_msg void OnLbnSelchangeList1();
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButton3();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

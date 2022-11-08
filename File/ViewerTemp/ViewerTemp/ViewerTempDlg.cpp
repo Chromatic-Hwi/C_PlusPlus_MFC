@@ -69,6 +69,7 @@ BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CViewerTempDlg::OnBnClickedOk)
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDCANCEL, &CViewerTempDlg::OnBnClickedCancel)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -177,16 +178,35 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 	if (ok == IDOK)
 	{
+		CRect Rect;
+		GetClientRect(&Rect);
+		float width = Rect.right - Rect.left, height = Rect.bottom - Rect.top;
+		
+		/*
+		float rect_rate = width / height, img_rate = (float)m_image2.GetWidth() / (float)m_image2.GetHeight();
+
+		int priority_range =((img_rate > rect_rate && img_rate < 1) || (img_rate < rect_rate&& img_rate >= 1)) ? 1 : 0;
+		
+		if (priority_range) width = height * img_rate;
+		else height = width / img_rate;
+		Rect.left = 0;Rect.right = (int)width;Rect.top = 0;Rect.bottom = (int)height;
+		*/
+
 		CString filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 		CImage m_image2;
 		m_image2.Load(filepath);
+		/*
 		int w, h;
 		w = m_image2.GetWidth();
 		h = m_image2.GetHeight();
+		*/
 		RedrawWindow();
 		CPaintDC dc(this);
 		//CCleintDC dc(this); 도 똑같이 동작함.
-		m_image2.Draw(dc, 0, 0, w, h);
+		m_image2.Draw(dc, 0, 0, width-160, height-80);
+
+
+		
 	}
 }
 
@@ -206,4 +226,18 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 void CViewerTempDlg::OnBnClickedCancel()
 {
 	CDialogEx::OnCancel();
+}
+
+void CViewerTempDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+	/*
+	CRect Rect;
+	GetClientRect(&Rect);
+	float width = Rect.right - Rect.left, height = Rect.bottom - Rect.top;
+
+	RedrawWindow();
+	CPaintDC dc(this);
+	m_image2.Draw(dc, 0, 0, width - 160, height - 80);
+	*/
 }
