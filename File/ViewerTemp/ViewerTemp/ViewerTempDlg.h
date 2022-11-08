@@ -13,6 +13,7 @@ public:
 	float m_pos = 1;
 	double origin_w, origin_h;
 	double new_w, new_h;
+	double rect_w_center, rect_h_center;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME

@@ -279,7 +279,7 @@ void CViewerTempDlg::OnMenuFileReset()
 }
 
 
-BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 가변 배율 출력
 {
 	if (zDelta > 0)
 	{if(m_pos < 40) m_pos += 0.1f;}
@@ -300,7 +300,9 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	CImage m_image2;
 	m_image2.Load(filepath);
 
-	int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+	//rect_w_center = rect_width / 2.f;
+	//rect_h_center = rect_height / 2.f;
 	int rect_ratio = rect_height / rect_width;
 
 	double img_width, img_height;
@@ -309,14 +311,18 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	double img_ratio = img_height / img_width;
 	double show_w, show_h;
 
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
+	new_w = m_ptMouse.x / rect_width;
+	new_h = m_ptMouse.y / rect_height;
+
+
+	if (img_ratio >= 1.)
 	{
 		show_w = (rect_height - 90) * img_ratio;
 		show_h = rect_height - 90;
 		origin_w = show_w, origin_h = show_h;
 		m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+	else
 	{
 		show_w = rect_width - 160;
 		show_h = (rect_width - 160) * img_ratio;
