@@ -225,36 +225,30 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 		{
-			show_w = (rect_height - 90) * img_ratio;
-			show_h = rect_height - 90;
+			show_w = (rect_height - 100) * img_ratio;
+			show_h = rect_height - 100;
 			if (show_w <= rect_width)
-			{
-				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
-			}
+			{}
 			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
 			{
-				show_w = rect_width - 160;
-				show_h = (rect_width - 160) * img_ratio_r;
-				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+				show_w = rect_width - 200;
+				show_h = (rect_width - 200) * img_ratio_r;
 			}
-			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		}
 		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 		{
-			show_w = rect_width - 160;
-			show_h = (rect_width - 160) * img_ratio;
+			show_w = rect_width - 200;
+			show_h = (rect_width - 200) * img_ratio;
 			if (show_h <= rect_height)
-			{
-				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
-			}
+			{}
 			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
 			{
-				show_w = (rect_height - 90) * img_ratio_r;
-				show_h = rect_height - 90;
-				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+				show_w = (rect_height - 100) * img_ratio_r;
+				show_h = rect_height - 100;
 			}
-			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		}
+		m_image2.Draw(dc, 0, 0, show_w, show_h);
+		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 	}
 }
 
@@ -312,7 +306,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	double img_ratio = img_height / img_width;
 	double img_ratio_r = img_width / img_height;
 	double show_w, show_h;
-
 	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 	int rect_ratio = rect_height / rect_width;
 
@@ -321,59 +314,34 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 
 	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 	{
-		show_w = (rect_height - 90) * img_ratio;
-		show_h = rect_height - 90;
+		show_w = (rect_height - 100) * img_ratio;
+		show_h = rect_height - 100;
 		if (show_w <= rect_width)
-		{
-		}
+		{}
 		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
 		{
-			show_w = rect_width - 160;
-			show_h = (rect_width - 160) * img_ratio_r;
+			show_w = rect_width - 200;
+			show_h = (rect_width - 200) * img_ratio_r;
 		}
 	}
 	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 	{
-		show_w = rect_width - 160;
-		show_h = (rect_width - 160) * img_ratio;
+		show_w = rect_width - 200;
+		show_h = (rect_width - 200) * img_ratio;
 		if (show_h <= rect_height)
-		{
-		}
+		{}
 		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
 		{
-			show_w = (rect_height - 90) * img_ratio_r;
-			show_h = rect_height - 90;
+			show_w = (rect_height - 100) * img_ratio_r;
+			show_h = rect_height - 100;
 		}
 	}
-
-	// 자자 제대로 시작해봅시다. 필요한것 = 커서 위치, 이미지 센터
-	double rect_w_center, rect_h_center;
-	rect_w_center = rect_width / 2;
-	rect_h_center = rect_height / 2;
-	//m_ptMouse.x
-	if (m_ptMouse.x >= rect_w_center && m_ptMouse.y < rect_h_center) // 1사분면. (원점-Xd, 원점+Yd)
-	{
-		start_x = 0 - (show_w * m_pos - show_w); // 괄호 안 수식이 맞는지는 좀 긴가민가한데(근소차) 일단 해보자
-		start_y = 0 + (show_h * m_pos - show_h);
-	}
-	else if (m_ptMouse.x < rect_w_center && m_ptMouse.y < rect_h_center) // 2사분면. (원점+Xd, 원점+Yd)
-	{
-		start_x = 0 + (show_w * m_pos - show_w); 
-		start_y = 0 + (show_h * m_pos - show_h);
-	}
-	else if (m_ptMouse.x < rect_w_center && m_ptMouse.y >= rect_h_center) // 3사분면. (원점+Xd, 원점-Yd)
-	{
-		start_x = 0 + (show_w * m_pos - show_w); 
-		start_y = 0 - (show_h * m_pos - show_h);
-	}
-	else // 4사분면. (원점-Xd, 원점-Yd)
-	{
-		start_x = 0 - (show_w * m_pos - show_w);
-		start_y = 0 - (show_h * m_pos - show_h);
-	}
-	
-	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
 	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
+
+	// 자자 제대로 시작해봅시다
+	start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
+	start_y = 0 - (show_h * m_pos - show_h); //얘도!
+	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -391,7 +359,7 @@ void CViewerTempDlg::OnBnClickedDownBtn()
 }
 
 
-void CViewerTempDlg::OnBnClickedOriginBtn()
+void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 {
 	m_pos = 1.0f;
 	CString intData = _T("");
