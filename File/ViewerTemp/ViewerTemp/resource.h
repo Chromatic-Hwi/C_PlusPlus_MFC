@@ -21,6 +21,7 @@
 #define IDC_LOC_Y_LIST                  1008
 #define IDC_SCROLLBAR_X                 1011
 #define IDC_SCROLLBAR_Y                 1012
+#define IDC_SCROLLBAR1                  1014
 #define ID_FILE_OPEN32771               32771
 #define ID_FILE_RESET                   32772
 
@@ -30,7 +31,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32773
-#define _APS_NEXT_CONTROL_VALUE         1013
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

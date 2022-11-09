@@ -63,6 +63,8 @@ void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LOC_X_LIST, m_loc_x_list);
 	DDX_Control(pDX, IDC_LOC_Y_LIST, m_loc_y_list);
 	DDX_Control(pDX, IDC_RATIO_LIST, m_ratio_list);
+	DDX_Control(pDX, IDC_SCROLLBAR_X, m_bar_x);
+	DDX_Control(pDX, IDC_SCROLLBAR_Y, m_bar_y);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
@@ -77,8 +79,6 @@ ON_WM_MOUSEWHEEL()
 ON_BN_CLICKED(IDC_ORIGIN_BTN, &CViewerTempDlg::OnBnClickedOriginBtn)
 ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
-ON_WM_HSCROLL()
-ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 

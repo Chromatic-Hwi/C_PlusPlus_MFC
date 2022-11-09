@@ -49,6 +49,8 @@ public:
 	CImage m_image;
 	CImage m_image2;
 	CString filepath;
+	CScrollBar m_bar_x;
+	CScrollBar m_bar_y;
 
 	afx_msg void OnMenuFileReset();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
