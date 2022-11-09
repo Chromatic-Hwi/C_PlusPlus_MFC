@@ -81,6 +81,7 @@ ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
 ON_WM_HSCROLL()
 ON_WM_VSCROLL()
+ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -488,4 +489,43 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
 	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
+}
+
+
+BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
+{
+	/*
+	// 1안 - IDB_Background를 선언해주지 못해서 실패
+	CRect Rect;
+	GetClientRect(&Rect);
+	pDC->FillSolidRect(&Rect, RGB(255, 255, 255));
+	CImage ImageBackground;
+	ImageBackground.LoadFromResource(AfxGetInstanceHandle(), IDB_Background);
+	ImageBackground.BitBlt(pDC->m_hDC, 0, 0);
+	*/
+
+	CRect Rect, ParentRect;
+	GetClientRect(&Rect);
+	GetParent()->GetClientRect(&ParentRect);
+
+	CPoint ptLeftTop = CPoint(0, 0);
+	ClientToScreen(&ptLeftTop);
+	GetParent()->ScreenToClient(&ptLeftTop);
+
+	CDC MemDC;
+	CBitmap Bmp;
+
+	MemDC.CreateCompatibleDC(NULL);
+	Bmp.CreateBitmap(ParentRect.Width(), ParentRect.Height(),
+		MemDC.GetDeviceCaps(PLANES),
+		MemDC.GetDeviceCaps(BITSPIXEL), NULL);
+	CBitmap* pOldBmp = MemDC.SelectObject(&Bmp);
+
+	GetParent()->SendMessage(WM_ERASEBKGND, (WPARAM)MemDC.m_hDC);
+	pDC->BitBlt(0, 0, Rect.Width(), Rect.Height(), &MemDC, ptLeftTop.x, ptLeftTop.y, SRCCOPY);
+
+	MemDC.SelectObject(pOldBmp);
+
+	return TRUE;
+	//return CDialogEx::OnEraseBkgnd(pDC); // Original
 }
