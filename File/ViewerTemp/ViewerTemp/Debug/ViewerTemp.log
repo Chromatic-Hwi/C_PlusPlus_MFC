@@ -16,10 +16,16 @@ C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\
 C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(254,56): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(254,25): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(317,17): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(355,61): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(355,45): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(355,29): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(355,20): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(388,36): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(388,26): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(356,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(357,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(361,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(362,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(366,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(367,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(371,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(372,15): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(375,61): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(375,45): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(409,36): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\ViewerTemp\ViewerTempDlg.cpp(409,26): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   ViewerTemp.vcxproj -> C:\Users\auseh\OneDrive\문서\GitHub\C_PlusPlus_MFC\File\ViewerTemp\Debug\ViewerTemp.exe

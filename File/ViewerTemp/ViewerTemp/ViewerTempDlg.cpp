@@ -346,10 +346,34 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		}
 	}
 
-	// 자자 제대로 시작해봅시다
-	start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
-	start_y = 0 - (show_h * m_pos - show_h); //얘도!
+	// 자자 제대로 시작해봅시다. 필요한것 = 커서 위치, 이미지 센터
+	double rect_w_center, rect_h_center;
+	rect_w_center = rect_width / 2;
+	rect_h_center = rect_height / 2;
+	//m_ptMouse.x
+	if (m_ptMouse.x >= rect_w_center && m_ptMouse.y < rect_h_center) // 1사분면. (원점-Xd, 원점+Yd)
+	{
+		start_x = 0 - (show_w * m_pos - show_w); // 괄호 안 수식이 맞는지는 좀 긴가민가한데(근소차) 일단 해보자
+		start_y = 0 + (show_h * m_pos - show_h);
+	}
+	else if (m_ptMouse.x < rect_w_center && m_ptMouse.y < rect_h_center) // 2사분면. (원점+Xd, 원점+Yd)
+	{
+		start_x = 0 + (show_w * m_pos - show_w); 
+		start_y = 0 + (show_h * m_pos - show_h);
+	}
+	else if (m_ptMouse.x < rect_w_center && m_ptMouse.y >= rect_h_center) // 3사분면. (원점+Xd, 원점-Yd)
+	{
+		start_x = 0 + (show_w * m_pos - show_w); 
+		start_y = 0 - (show_h * m_pos - show_h);
+	}
+	else // 4사분면. (원점-Xd, 원점-Yd)
+	{
+		start_x = 0 - (show_w * m_pos - show_w);
+		start_y = 0 - (show_h * m_pos - show_h);
+	}
+	
 	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
+	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
