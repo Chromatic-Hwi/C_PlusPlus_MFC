@@ -60,7 +60,8 @@ CViewerTempDlg::CViewerTempDlg(CWnd* pParent /*=nullptr*/)
 void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LOC_LIST, m_loc_list);
+	DDX_Control(pDX, IDC_LOC_X_LIST, m_loc_x_list);
+	DDX_Control(pDX, IDC_LOC_Y_LIST, m_loc_y_list);
 	DDX_Control(pDX, IDC_RATIO_LIST, m_ratio_list);
 }
 
@@ -112,7 +113,7 @@ BOOL CViewerTempDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-	m_image.Load(L"TestCard.PNG");
+	//m_image.Load(L"TestCard.PNG");
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -223,32 +224,56 @@ void CViewerTempDlg::OnMenuFileOpen()
 		CRect Rect;
 		GetClientRect(&Rect);
 
-		CImage m_image2;
-		m_image2.Load(filepath);
-
 		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 		int rect_ratio = rect_height / rect_width;
+
+		CImage m_image2;
+		m_image2.Load(filepath);
 
 		double img_width, img_height;
 		img_width = m_image2.GetWidth();
 		img_height = m_image2.GetHeight();
 		double img_ratio = img_height / img_width;
+		double img_ratio_r = img_width / img_height;
+		/*
+		Rect.right =img_width + 200;
+		Rect.bottom = img_height + 150;
+		MoveWindow(1400, 700, Rect.right, Rect.bottom);
+		*/
 
 		double show_w, show_h;
 
-		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력
+		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 		{
 			show_w = (rect_height - 90) * img_ratio;
 			show_h = rect_height - 90;
-			origin_w = show_w, origin_h = show_h;
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			if (show_w <= rect_width)
+			{
+				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			}
+			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+			{
+				show_w = rect_width - 160;
+				show_h = (rect_width - 160) * img_ratio_r;
+				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			}
+			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		}
 		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 		{
 			show_w = rect_width - 160;
 			show_h = (rect_width - 160) * img_ratio;
-			origin_w = show_w, origin_h = show_h;
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			if (show_h <= rect_height)
+			{
+				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			}
+			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+			{
+				show_w = (rect_height - 90) * img_ratio_r;
+				show_h = rect_height - 90;
+				m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+			}
+			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		}
 	}
 }
@@ -260,16 +285,21 @@ void CViewerTempDlg::OnBnClickedOk()
 }
 
 
-void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
+void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출력
 {
 	m_ptMouse = point;
 	CDialogEx::OnMouseMove(nFlags, point);
-	CString strData = _T("");
-	strData.Format(_T("Cursor >> X:%03d | Y:%03d"), m_ptMouse.x, m_ptMouse.y);
+	CString strDataX = _T("");
+	CString strDataY = _T("");
+	strDataX.Format(_T("    X : %d"), m_ptMouse.x);
+	strDataY.Format(_T("    Y : %d"), m_ptMouse.y);
 	
-	m_loc_list.DeleteString(0);
-	m_loc_list.AddString(strData);
-	m_loc_list.SetCurSel(m_loc_list.GetCount() - 1);
+	m_loc_x_list.DeleteString(0);
+	m_loc_y_list.DeleteString(0);
+	m_loc_x_list.AddString(strDataX);
+	m_loc_y_list.AddString(strDataY);
+	m_loc_x_list.SetCurSel(m_loc_x_list.GetCount() - 1);
+	m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
 }
 
 
@@ -300,34 +330,50 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	CImage m_image2;
 	m_image2.Load(filepath);
 
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double img_ratio_r = img_width / img_height;
+	double show_w, show_h;
+
 	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 	//rect_w_center = rect_width / 2.f;
 	//rect_h_center = rect_height / 2.f;
 	int rect_ratio = rect_height / rect_width;
 
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double show_w, show_h;
-
 	new_w = m_ptMouse.x / rect_width;
 	new_h = m_ptMouse.y / rect_height;
 
-
-	if (img_ratio >= 1.)
+	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 	{
 		show_w = (rect_height - 90) * img_ratio;
 		show_h = rect_height - 90;
-		origin_w = show_w, origin_h = show_h;
-		m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		if (show_w <= rect_width)
+		{
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		}
+		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+		{
+			show_w = rect_width - 160;
+			show_h = (rect_width - 160) * img_ratio_r;
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		}
 	}
-	else
+	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 	{
 		show_w = rect_width - 160;
 		show_h = (rect_width - 160) * img_ratio;
-		origin_w = show_w, origin_h = show_h;
-		m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		if (show_h <= rect_height)
+		{
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		}
+		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+		{
+			show_w = (rect_height - 90) * img_ratio_r;
+			show_h = rect_height - 90;
+			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
+		}
 	}
 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);

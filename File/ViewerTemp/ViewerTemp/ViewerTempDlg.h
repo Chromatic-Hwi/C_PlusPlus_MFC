@@ -25,10 +25,10 @@ public:
 
 private:
 	CPoint m_ptMouse;
-	CListBox m_loc_list;
+	CListBox m_loc_x_list;
+	CListBox m_loc_y_list;
 	CListBox m_ratio_list;
 	
-
 // 구현입니다.
 protected:
 	HICON m_hIcon;
