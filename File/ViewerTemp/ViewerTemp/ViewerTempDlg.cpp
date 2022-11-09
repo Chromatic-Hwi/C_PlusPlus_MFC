@@ -338,9 +338,10 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	}
 	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
-	// 자자 제대로 시작해봅시다
-	start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
-	start_y = 0 - (show_h * m_pos - show_h); //얘도!
+	//start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
+	//start_y = 0 - (show_h * m_pos - show_h); //얘도!
+	start_x = 0 - fabs((show_w * m_pos - show_w) / 2);
+	start_y = 0 - fabs((show_h * m_pos - show_h) / 2); 
 	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
@@ -375,19 +376,4 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, 0, 0, origin_w, origin_h);
-}
-
-void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	// 휠이 증가할 때 마다 스크롤바도 변해야 하는데
-	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
-}
-
-
-void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	// 휠이 증가할 때마다 스크롤바도 변동
-	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
