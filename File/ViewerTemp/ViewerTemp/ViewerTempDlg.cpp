@@ -79,6 +79,8 @@ ON_WM_MOUSEWHEEL()
 ON_BN_CLICKED(IDC_ORIGIN_BTN, &CViewerTempDlg::OnBnClickedOriginBtn)
 ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
+ON_WM_HSCROLL()
+ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -221,7 +223,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 		double img_ratio = img_height / img_width;
 		double img_ratio_r = img_width / img_height;
 
-		double show_w, show_h;
+		//double show_w, show_h;
 
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 		{
@@ -249,6 +251,12 @@ void CViewerTempDlg::OnMenuFileOpen()
 		}
 		m_image2.Draw(dc, 0, 0, show_w, show_h);
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
+		
+		m_bar_x.SetScrollRange(0, 40);
+		m_bar_x.SetScrollPos(0);
+		m_bar_y.SetScrollRange(0, 40);
+		m_bar_y.SetScrollPos(0);
+		
 	}
 }
 
@@ -305,7 +313,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	img_height = m_image2.GetHeight();
 	double img_ratio = img_height / img_width;
 	double img_ratio_r = img_width / img_height;
-	double show_w, show_h;
+	//double show_w, show_h;
 	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 	int rect_ratio = rect_height / rect_width;
 
@@ -338,25 +346,58 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	}
 	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
-	//start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
-	//start_y = 0 - (show_h * m_pos - show_h); //얘도!
 	start_x = 0 - fabs((show_w * m_pos - show_w) / 2);
 	start_y = 0 - fabs((show_h * m_pos - show_h) / 2); 
-	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
+	show_w *= m_pos;
+	show_h *= m_pos;
+	//m_image2.Draw(dc, start_x, start_y, show_w, show_h);
+	m_image2.Draw(dc, 0, 0, show_w, show_h);
+	m_bar_x.SetScrollPos(m_pos);
+	m_bar_y.SetScrollPos(m_pos);
+
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 
 void CViewerTempDlg::OnBnClickedUpBtn()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	// 기본 출력과 휠 가변 배율에서 시작점을 public 변수로 저장하도록 해서 여기서 불러 쓸 수 있도록 해야 이미지가 갑자기 다른 곳으로 가지 않고 그대로 배율만 움직일 수 있음.
+	m_pos += 1.0f;
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	show_w *= m_pos;
+	show_h *= m_pos;
+	m_image2.Draw(dc, start_x, start_y, show_w, show_h);
 }
 
 
 void CViewerTempDlg::OnBnClickedDownBtn()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	show_w /= m_pos;
+	show_h /= m_pos;
+	m_image2.Draw(dc, start_x, start_y, show_w, show_h);
+
+	m_pos -= 1.0f;
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 }
 
 
@@ -376,4 +417,39 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, 0, 0, origin_w, origin_h);
+}
+
+
+void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+	int pos_x;
+	pos_x = m_bar_x.GetScrollPos();
+
+	if (nSBCode == SB_LINEDOWN)
+	{
+		m_bar_x.SetScrollPos(pos_x + 5);
+	}
+	else if (nSBCode == SB_LINEUP) 
+	{
+		m_bar_x.SetScrollPos(pos_x - 5);
+	}
+	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
+}
+
+
+void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+	int pos_y;
+	pos_y = m_bar_y.GetScrollPos();
+
+	if (nSBCode == SB_LINEDOWN)
+	{
+		m_bar_x.SetScrollPos(pos_y + 5);
+	}
+	else if (nSBCode == SB_LINEUP)
+	{
+		m_bar_x.SetScrollPos(pos_y - 5);
+	}
 }
