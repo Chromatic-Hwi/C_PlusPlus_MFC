@@ -10,10 +10,12 @@ class CViewerTempDlg : public CDialogEx
 // 생성입니다.
 public:
 	CViewerTempDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	CPoint m_ptMouse;
 	float m_pos = 1;
 	double origin_w, origin_h;
 	double new_w, new_h;
 	double rect_w_center, rect_h_center;
+	double start_x, start_y;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -24,7 +26,6 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
 private:
-	CPoint m_ptMouse;
 	CListBox m_loc_x_list;
 	CListBox m_loc_y_list;
 	CListBox m_ratio_list;

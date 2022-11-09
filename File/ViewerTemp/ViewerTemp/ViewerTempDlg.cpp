@@ -155,22 +155,7 @@ void CViewerTempDlg::OnPaint()
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
-	{
-		//CDialogEx::OnPaint();
-
-		/*
-		고정 경로의 이미지만 출력하는 코드
-		CPaintDC dc(this);
-		m_image.Draw(dc, 0, 0);
-		*/
-		
-		/*
-		CPaintDC dc(this);
-		CString strData = _T("");
-		strData.Format(_T("X:%03d, Y:%03d"), m_ptMouse.x, m_ptMouse.y);
-		dc.TextOutW(10, 10, strData);
-		*/
-	}
+	{}
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -235,11 +220,6 @@ void CViewerTempDlg::OnMenuFileOpen()
 		img_height = m_image2.GetHeight();
 		double img_ratio = img_height / img_width;
 		double img_ratio_r = img_width / img_height;
-		/*
-		Rect.right =img_width + 200;
-		Rect.bottom = img_height + 150;
-		MoveWindow(1400, 700, Rect.right, Rect.bottom);
-		*/
 
 		double show_w, show_h;
 
@@ -280,9 +260,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 
 void CViewerTempDlg::OnBnClickedOk()
-{
-	RedrawWindow();
-}
+{RedrawWindow();}
 
 
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출력
@@ -304,9 +282,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 
 
 void CViewerTempDlg::OnMenuFileReset()
-{
-	RedrawWindow();
-}
+{RedrawWindow();}
 
 
 BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 가변 배율 출력
@@ -338,8 +314,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	double show_w, show_h;
 
 	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
-	//rect_w_center = rect_width / 2.f;
-	//rect_h_center = rect_height / 2.f;
 	int rect_ratio = rect_height / rect_width;
 
 	new_w = m_ptMouse.x / rect_width;
@@ -351,13 +325,11 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		show_h = rect_height - 90;
 		if (show_w <= rect_width)
 		{
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
 		{
 			show_w = rect_width - 160;
 			show_h = (rect_width - 160) * img_ratio_r;
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 	}
 	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
@@ -366,16 +338,18 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		show_h = (rect_width - 160) * img_ratio;
 		if (show_h <= rect_height)
 		{
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
 		{
 			show_w = (rect_height - 90) * img_ratio_r;
 			show_h = rect_height - 90;
-			m_image2.Draw(dc, 0 - (show_w * m_pos - show_w), 0 - (show_h * m_pos - show_h), show_w * m_pos, show_h * m_pos);
 		}
 	}
 
+	// 자자 제대로 시작해봅시다
+	start_x = 0 - (show_w * m_pos - show_w); //이거 바꿔야 함!
+	start_y = 0 - (show_h * m_pos - show_h); //얘도!
+	m_image2.Draw(dc, start_x, start_y, show_w * m_pos, show_h * m_pos);
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -383,6 +357,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 void CViewerTempDlg::OnBnClickedUpBtn()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// 기본 출력과 휠 가변 배율에서 시작점을 public 변수로 저장하도록 해서 여기서 불러 쓸 수 있도록 해야 이미지가 갑자기 다른 곳으로 가지 않고 그대로 배율만 움직일 수 있음.
 }
 
 
@@ -413,7 +388,7 @@ void CViewerTempDlg::OnBnClickedOriginBtn()
 void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
+	// 휠이 증가할 때 마다 스크롤바도 변해야 하는데
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
@@ -421,6 +396,6 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
+	// 휠이 증가할 때마다 스크롤바도 변동
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
