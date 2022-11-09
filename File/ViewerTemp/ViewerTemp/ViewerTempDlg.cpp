@@ -252,9 +252,9 @@ void CViewerTempDlg::OnMenuFileOpen()
 		m_image2.Draw(dc, 0, 0, show_w, show_h);
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		
-		m_bar_x.SetScrollRange(0, 40);
+		m_bar_x.SetScrollRange(0, rect_width);
+		m_bar_y.SetScrollRange(0, rect_height);
 		m_bar_x.SetScrollPos(0);
-		m_bar_y.SetScrollRange(0, 40);
 		m_bar_y.SetScrollPos(0);
 		
 	}
@@ -262,7 +262,11 @@ void CViewerTempDlg::OnMenuFileOpen()
 
 
 void CViewerTempDlg::OnBnClickedOk()
-{RedrawWindow();}
+{
+RedrawWindow();
+m_bar_x.SetScrollPos(0);
+m_bar_y.SetScrollPos(0);
+}
 
 
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출력
@@ -284,7 +288,11 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 
 
 void CViewerTempDlg::OnMenuFileReset()
-{RedrawWindow();}
+{
+	RedrawWindow();
+	m_bar_x.SetScrollPos(0);
+	m_bar_y.SetScrollPos(0);
+}
 
 
 BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 가변 배율 출력
@@ -346,14 +354,13 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	}
 	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
-	start_x = 0 - fabs((show_w * m_pos - show_w) / 2);
-	start_y = 0 - fabs((show_h * m_pos - show_h) / 2); 
+	loc_x = 0 - fabs((show_w * m_pos - show_w) / 2);
+	loc_y = 0 - fabs((show_h * m_pos - show_h) / 2); 
 	show_w *= m_pos;
 	show_h *= m_pos;
-	//m_image2.Draw(dc, start_x, start_y, show_w, show_h);
 	m_image2.Draw(dc, 0, 0, show_w, show_h);
-	m_bar_x.SetScrollPos(m_pos);
-	m_bar_y.SetScrollPos(m_pos);
+	//m_bar_x.SetScrollPos(m_pos);
+	//m_bar_y.SetScrollPos(m_pos);
 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
@@ -376,7 +383,7 @@ void CViewerTempDlg::OnBnClickedUpBtn()
 	m_image2.Load(filepath);
 	show_w *= m_pos;
 	show_h *= m_pos;
-	m_image2.Draw(dc, start_x, start_y, show_w, show_h);
+	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
 }
 
 
@@ -390,7 +397,7 @@ void CViewerTempDlg::OnBnClickedDownBtn()
 	m_image2.Load(filepath);
 	show_w /= m_pos;
 	show_h /= m_pos;
-	m_image2.Draw(dc, start_x, start_y, show_w, show_h);
+	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
 
 	m_pos -= 1.0f;
 	CString intData = _T("");
@@ -417,39 +424,68 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, 0, 0, origin_w, origin_h);
+	m_bar_x.SetScrollPos(0);
+	m_bar_y.SetScrollPos(0);
 }
 
 
-void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // 횡스크롤바
 {
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
-	int pos_x;
+	int pos_x, move_x;
 	pos_x = m_bar_x.GetScrollPos();
+	move_x = show_w / 40;
 
 	if (nSBCode == SB_LINEDOWN)
 	{
-		m_bar_x.SetScrollPos(pos_x + 5);
+		m_bar_x.SetScrollPos(pos_x + move_x);
+		loc_x -= move_x;
+		show_w -= move_x;
+
 	}
 	else if (nSBCode == SB_LINEUP) 
 	{
-		m_bar_x.SetScrollPos(pos_x - 5);
+		m_bar_x.SetScrollPos(pos_x - move_x);
+		loc_x += move_x;
+		show_w += move_x;
 	}
+	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
 	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
 }
 
 
-void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // 종스크롤바
 {
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
-	int pos_y;
+	int pos_y, move_y;
 	pos_y = m_bar_y.GetScrollPos();
+	move_y = show_h / 40;
 
 	if (nSBCode == SB_LINEDOWN)
 	{
-		m_bar_x.SetScrollPos(pos_y + 5);
+		m_bar_y.SetScrollPos(pos_y + move_y);
+		loc_y -= move_y;
+		show_h -= move_y;
+
 	}
 	else if (nSBCode == SB_LINEUP)
 	{
-		m_bar_x.SetScrollPos(pos_y - 5);
+		m_bar_y.SetScrollPos(pos_y - move_y);
+		loc_y += move_y;
+		show_h += move_y;
 	}
+	RedrawWindow();
+	CPaintDC dc(this);
+	CRect Rect;
+	GetClientRect(&Rect);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
+	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
 }

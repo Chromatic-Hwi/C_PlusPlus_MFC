@@ -15,7 +15,7 @@ public:
 	double origin_w, origin_h;
 	double new_w, new_h;
 	double rect_w_center, rect_h_center;
-	double start_x, start_y;
+	double loc_x, loc_y;
 	double show_w, show_h;
 
 // 대화 상자 데이터입니다.
