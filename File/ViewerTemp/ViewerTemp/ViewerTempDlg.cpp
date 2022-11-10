@@ -81,7 +81,7 @@ ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
 ON_WM_HSCROLL()
 ON_WM_VSCROLL()
-ON_WM_ERASEBKGND()
+//ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -121,6 +121,7 @@ BOOL CViewerTempDlg::OnInitDialog()
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
+
 void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -134,9 +135,6 @@ void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
-//  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
-//  프레임워크에서 이 작업을 자동으로 수행합니다.
 
 void CViewerTempDlg::OnPaint()
 {
@@ -144,7 +142,7 @@ void CViewerTempDlg::OnPaint()
 	{
 		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
 
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+		//SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
@@ -157,8 +155,7 @@ void CViewerTempDlg::OnPaint()
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
-	else
-	{}
+	else{}
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -257,16 +254,23 @@ void CViewerTempDlg::OnMenuFileOpen()
 		m_bar_y.SetScrollRange(0, rect_height);
 		m_bar_x.SetScrollPos(0);
 		m_bar_y.SetScrollPos(0);
-		
 	}
 }
 
 
-void CViewerTempDlg::OnBnClickedOk()
+void CViewerTempDlg::OnBnClickedOk() // 초기화 버튼
 {
-RedrawWindow();
-m_bar_x.SetScrollPos(0);
-m_bar_y.SetScrollPos(0);
+	RedrawWindow();
+	m_bar_x.SetScrollPos(0);
+	m_bar_y.SetScrollPos(0);
+}
+
+
+void CViewerTempDlg::OnMenuFileReset() //메뉴의 초기화 탭
+{
+	RedrawWindow();
+	m_bar_x.SetScrollPos(0);
+	m_bar_y.SetScrollPos(0);
 }
 
 
@@ -288,20 +292,12 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 }
 
 
-void CViewerTempDlg::OnMenuFileReset()
-{
-	RedrawWindow();
-	m_bar_x.SetScrollPos(0);
-	m_bar_y.SetScrollPos(0);
-}
-
-
 BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 가변 배율 출력
 {
 	if (zDelta > 0)
 	{if(m_pos < 40) m_pos += 0.1f;}
 	else
-	{if (m_pos > 1.0) m_pos -= 0.1f;}
+	{if (m_pos > 1.1) m_pos -= 0.1f;}
 	
 	CString intData = _T("");
 	intData.Format(_T("배율 : %.01f배"), m_pos);
@@ -322,12 +318,9 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	img_height = m_image2.GetHeight();
 	double img_ratio = img_height / img_width;
 	double img_ratio_r = img_width / img_height;
-	//double show_w, show_h;
 	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 	int rect_ratio = rect_height / rect_width;
 
-	new_w = m_ptMouse.x / rect_width;
-	new_h = m_ptMouse.y / rect_height;
 
 	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 	{
@@ -360,9 +353,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	show_w *= m_pos;
 	show_h *= m_pos;
 	m_image2.Draw(dc, 0, 0, show_w, show_h);
-	//m_bar_x.SetScrollPos(m_pos);
-	//m_bar_y.SetScrollPos(m_pos);
-
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
@@ -435,20 +425,24 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 	int pos_x, move_x;
 	pos_x = m_bar_x.GetScrollPos();
-	move_x = show_w / 40;
+	move_x = rect_width / (50 * m_pos);
 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_x.SetScrollPos(pos_x + move_x);
 		loc_x -= move_x;
-		show_w -= move_x;
 
 	}
 	else if (nSBCode == SB_LINEUP) 
 	{
 		m_bar_x.SetScrollPos(pos_x - move_x);
 		loc_x += move_x;
-		show_w += move_x;
+	}
+	else if (nSBCode == SB_THUMBTRACK) 
+	{
+		m_bar_x.SetScrollPos(nPos);
+		// 바가 증가되는지 감소되는지 다시 경우를 나누는게 맞나?
+		loc_x += pos_x;
 	}
 	RedrawWindow();
 	CPaintDC dc(this);
@@ -457,8 +451,7 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
-	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
-}
+	}
 
 
 void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // 종스크롤바
@@ -466,20 +459,23 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 	int pos_y, move_y;
 	pos_y = m_bar_y.GetScrollPos();
-	move_y = show_h / 40;
+	move_y = rect_height / (50 * m_pos);
 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_y.SetScrollPos(pos_y + move_y);
 		loc_y -= move_y;
-		show_h -= move_y;
 
 	}
 	else if (nSBCode == SB_LINEUP)
 	{
 		m_bar_y.SetScrollPos(pos_y - move_y);
 		loc_y += move_y;
-		show_h += move_y;
+	}
+	else if (nSBCode == SB_THUMBTRACK)
+	{
+		m_bar_y.SetScrollPos(nPos);
+		loc_y -= pos_y;
 	}
 	RedrawWindow();
 	CPaintDC dc(this);
@@ -488,44 +484,13 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
-	//else if (nSBCode == SB_THUMBTRACK) m_bar_x.SetScrollPos(nPos);
 }
 
-
+/*
 BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 {
-	/*
-	// 1안 - IDB_Background를 선언해주지 못해서 실패
-	CRect Rect;
-	GetClientRect(&Rect);
-	pDC->FillSolidRect(&Rect, RGB(255, 255, 255));
-	CImage ImageBackground;
-	ImageBackground.LoadFromResource(AfxGetInstanceHandle(), IDB_Background);
-	ImageBackground.BitBlt(pDC->m_hDC, 0, 0);
-	*/
-
-	CRect Rect, ParentRect;
-	GetClientRect(&Rect);
-	GetParent()->GetClientRect(&ParentRect);
-
-	CPoint ptLeftTop = CPoint(0, 0);
-	ClientToScreen(&ptLeftTop);
-	GetParent()->ScreenToClient(&ptLeftTop);
-
-	CDC MemDC;
-	CBitmap Bmp;
-
-	MemDC.CreateCompatibleDC(NULL);
-	Bmp.CreateBitmap(ParentRect.Width(), ParentRect.Height(),
-		MemDC.GetDeviceCaps(PLANES),
-		MemDC.GetDeviceCaps(BITSPIXEL), NULL);
-	CBitmap* pOldBmp = MemDC.SelectObject(&Bmp);
-
-	GetParent()->SendMessage(WM_ERASEBKGND, (WPARAM)MemDC.m_hDC);
-	pDC->BitBlt(0, 0, Rect.Width(), Rect.Height(), &MemDC, ptLeftTop.x, ptLeftTop.y, SRCCOPY);
-
-	MemDC.SelectObject(pOldBmp);
-
+	bool state=false;
 	return TRUE;
-	//return CDialogEx::OnEraseBkgnd(pDC); // Original
+	//return CDialogEx::OnEraseBkgnd(pDC);
 }
+*/

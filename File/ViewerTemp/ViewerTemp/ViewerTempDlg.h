@@ -13,10 +13,11 @@ public:
 	CPoint m_ptMouse;
 	float m_pos = 1;
 	double origin_w, origin_h;
-	double new_w, new_h;
 	double rect_w_center, rect_h_center;
 	double loc_x, loc_y;
 	double show_w, show_h;
+	double rect_width, rect_height;
+
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -60,5 +61,5 @@ public:
 	afx_msg void OnBnClickedDownBtn();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
