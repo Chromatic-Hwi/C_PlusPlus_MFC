@@ -82,6 +82,8 @@ ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
 ON_WM_HSCROLL()
 ON_WM_VSCROLL()
 //ON_WM_ERASEBKGND()
+ON_WM_LBUTTONDOWN()
+ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -503,3 +505,5 @@ BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 	//return CDialogEx::OnEraseBkgnd(pDC);
 }
 */
+
+
