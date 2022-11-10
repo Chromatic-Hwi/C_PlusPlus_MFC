@@ -65,6 +65,7 @@ void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RATIO_LIST, m_ratio_list);
 	DDX_Control(pDX, IDC_SCROLLBAR_X, m_bar_x);
 	DDX_Control(pDX, IDC_SCROLLBAR_Y, m_bar_y);
+	DDX_Control(pDX, IDC_PIC, m_pic);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
@@ -207,15 +208,27 @@ void CViewerTempDlg::OnMenuFileOpen()
 		RedrawWindow();
 		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 
-		CPaintDC dc(this);
+		//CPaintDC dc(this);
+		
+		CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC)); //new
 		CRect Rect;
 		GetClientRect(&Rect);
-
-		int rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
-		int rect_ratio = rect_height / rect_width;
-
+		picturebox->GetClientRect(Rect);//new
+		CClientDC dc(picturebox);//new
 		CImage m_image2;
 		m_image2.Load(filepath);
+		CBitmap m_pic;//new
+		m_pic.Attach(m_image2);//new
+		CDC memoryDC;//new
+		memoryDC.CreateCompatibleDC(&dc);//new
+		memoryDC.SelectObject(m_pic);//new
+		BITMAP bmp;//new
+		m_pic.GetBitmap(&bmp);//new
+		dc.SetStretchBltMode(COLORONCOLOR);//new
+
+		rect_width = Rect.Width(); //굳이 Rect.Width()로 안 하고 한번 더 변수 지정을 해준 이유는 커서의 표시 제한 범위를 설정하기 위함임.
+		rect_height = Rect.Height();
+		int rect_ratio = rect_height / rect_width;
 
 		double img_width, img_height;
 		img_width = m_image2.GetWidth();
@@ -223,37 +236,44 @@ void CViewerTempDlg::OnMenuFileOpen()
 		double img_ratio = img_height / img_width;
 		double img_ratio_r = img_width / img_height;
 
-		//double show_w, show_h;
-
+		
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 		{
-			show_w = (rect_height - 100) * img_ratio;
-			show_h = rect_height - 100;
-			if (show_w <= rect_width)
-			{}
+			show_w = Rect.Height() * img_ratio;
+			show_h = Rect.Height();
+			if (show_w <= Rect.Width())
+			{
+			}
 			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
 			{
-				show_w = rect_width - 200;
-				show_h = (rect_width - 200) * img_ratio_r;
+				show_w = Rect.Width();
+				show_h = Rect.Width() * img_ratio_r;
 			}
 		}
 		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
 		{
-			show_w = rect_width - 200;
-			show_h = (rect_width - 200) * img_ratio;
-			if (show_h <= rect_height)
-			{}
+			show_w = Rect.Width();
+			show_h = Rect.Width() * img_ratio;
+			if (show_h <= Rect.Height())
+			{
+			}
 			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
 			{
-				show_w = (rect_height - 100) * img_ratio_r;
-				show_h = rect_height - 100;
+				show_w = Rect.Height() * img_ratio_r;
+				show_h = Rect.Height();
 			}
 		}
-		m_image2.Draw(dc, 0, 0, show_w, show_h);
+
+		dc.StretchBlt(Rect.left, Rect.top, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);//new
+
+		//m_image2.Detach();
+
+
+		//m_image2.Draw(dc, 0, 0, show_w, show_h);
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
-		
-		m_bar_x.SetScrollRange(0, rect_width * m_pos);
-		m_bar_y.SetScrollRange(0, rect_height * m_pos);
+
+		m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
+		m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 		m_bar_x.SetScrollPos(0);
 		m_bar_y.SetScrollPos(0);
 	}
@@ -280,17 +300,27 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 {
 	m_ptMouse = point;
 	CDialogEx::OnMouseMove(nFlags, point);
-	CString strDataX = _T("");
-	CString strDataY = _T("");
-	strDataX.Format(_T("    X : %d"), m_ptMouse.x);
-	strDataY.Format(_T("    Y : %d"), m_ptMouse.y);
+	int Mx, My;
+	Mx = m_ptMouse.x - 19;
+	My = m_ptMouse.y - 19;
+
+	if (Mx >= 0 && My >= 0 && Mx <= rect_width && My <= rect_height)
+	{
+		CString strDataX = _T("");
+		CString strDataY = _T("");
+		strDataX.Format(_T("    X : %d"), Mx);
+		strDataY.Format(_T("    Y : %d"), My);
+
+		m_loc_x_list.DeleteString(0);
+		m_loc_y_list.DeleteString(0);
+		m_loc_x_list.AddString(strDataX);
+		m_loc_y_list.AddString(strDataY);
+		m_loc_x_list.SetCurSel(m_loc_x_list.GetCount() - 1);
+		m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
+	}
+	else
+	{}
 	
-	m_loc_x_list.DeleteString(0);
-	m_loc_y_list.DeleteString(0);
-	m_loc_x_list.AddString(strDataX);
-	m_loc_y_list.AddString(strDataY);
-	m_loc_x_list.SetCurSel(m_loc_x_list.GetCount() - 1);
-	m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
 }
 
 
