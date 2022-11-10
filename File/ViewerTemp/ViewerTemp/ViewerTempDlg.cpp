@@ -250,8 +250,8 @@ void CViewerTempDlg::OnMenuFileOpen()
 		m_image2.Draw(dc, 0, 0, show_w, show_h);
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 		
-		m_bar_x.SetScrollRange(0, rect_width);
-		m_bar_y.SetScrollRange(0, rect_height);
+		m_bar_x.SetScrollRange(0, rect_width * m_pos);
+		m_bar_y.SetScrollRange(0, rect_height * m_pos);
 		m_bar_x.SetScrollPos(0);
 		m_bar_y.SetScrollPos(0);
 	}
@@ -318,7 +318,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	img_height = m_image2.GetHeight();
 	double img_ratio = img_height / img_width;
 	double img_ratio_r = img_width / img_height;
-	double rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
+	rect_width = Rect.right - Rect.left, rect_height = Rect.bottom - Rect.top;
 	int rect_ratio = rect_height / rect_width;
 
 
@@ -352,12 +352,14 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	loc_y = 0 - fabs((show_h * m_pos - show_h) / 2); 
 	show_w *= m_pos;
 	show_h *= m_pos;
+	m_bar_x.SetScrollRange(0, rect_width * m_pos);
+	m_bar_y.SetScrollRange(0, rect_height * m_pos);
 	m_image2.Draw(dc, 0, 0, show_w, show_h);
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 
-void CViewerTempDlg::OnBnClickedUpBtn()
+void CViewerTempDlg::OnBnClickedUpBtn() // 배율 증가 버튼
 {
 	m_pos += 1.0f;
 	CString intData = _T("");
@@ -375,10 +377,13 @@ void CViewerTempDlg::OnBnClickedUpBtn()
 	show_w *= m_pos;
 	show_h *= m_pos;
 	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
+
+	m_bar_x.SetScrollRange(0, rect_width * m_pos);
+	m_bar_y.SetScrollRange(0, rect_height * m_pos);
 }
 
 
-void CViewerTempDlg::OnBnClickedDownBtn()
+void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
 {
 	RedrawWindow();
 	CPaintDC dc(this);
@@ -396,6 +401,9 @@ void CViewerTempDlg::OnBnClickedDownBtn()
 	m_ratio_list.DeleteString(0);
 	m_ratio_list.AddString(intData);
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+	m_bar_x.SetScrollRange(0, rect_width * m_pos);
+	m_bar_y.SetScrollRange(0, rect_height * m_pos);
 }
 
 
@@ -415,6 +423,9 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 	CImage m_image2;
 	m_image2.Load(filepath);
 	m_image2.Draw(dc, 0, 0, origin_w, origin_h);
+
+	m_bar_x.SetScrollRange(0, rect_width * m_pos);
+	m_bar_y.SetScrollRange(0, rect_height * m_pos);
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 }
@@ -425,13 +436,12 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 	int pos_x, move_x;
 	pos_x = m_bar_x.GetScrollPos();
-	move_x = rect_width / (50 * m_pos);
+	move_x = show_w / (50 * m_pos);
 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_x.SetScrollPos(pos_x + move_x);
 		loc_x -= move_x;
-
 	}
 	else if (nSBCode == SB_LINEUP) 
 	{
@@ -459,13 +469,12 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 	int pos_y, move_y;
 	pos_y = m_bar_y.GetScrollPos();
-	move_y = rect_height / (50 * m_pos);
+	move_y = show_h / (50 * m_pos);
 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_y.SetScrollPos(pos_y + move_y);
 		loc_y -= move_y;
-
 	}
 	else if (nSBCode == SB_LINEUP)
 	{
