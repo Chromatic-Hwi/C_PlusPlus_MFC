@@ -68,6 +68,7 @@ void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PIC, m_pic);
 	DDX_Control(pDX, IDC_WND_SIZE, m_wnd_size);
 	DDX_Control(pDX, IDC_IMG_SIZE, m_img_size);
+	DDX_Control(pDX, IDC_RATIO, m_ratio_list2);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
@@ -198,8 +199,11 @@ void CViewerTempDlg::OnMenuFileOpen()
 		m_pic.GetBitmap(&bmp);
 		dc.SetStretchBltMode(COLORONCOLOR);
 
-		double img_ratio = m_image2.GetHeight() / m_image2.GetWidth();
-		double img_ratio_r = m_image2.GetWidth() / m_image2.GetHeight();
+		double img_width, img_height;
+		img_width = m_image2.GetWidth();
+		img_height = m_image2.GetHeight();
+		double img_ratio = img_height / img_width;
+		double img_ratio_r = img_width / img_height;
 		
 		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 		{
@@ -229,8 +233,14 @@ void CViewerTempDlg::OnMenuFileOpen()
 		dc.StretchBlt(abs(Rect.Width()-show_w)/2, abs(Rect.Height()-show_h)/2, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌,
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
+		CString ratioData = _T("");
+		ratioData.Format(_T("H/W : %.3f"), img_ratio);
+		m_ratio_list2.DeleteString(0);
+		m_ratio_list2.AddString(ratioData);
+		m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+
 		CString wndData = _T("");
-		wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+		ratioData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
 		m_wnd_size.DeleteString(0);
 		m_wnd_size.AddString(wndData);
 		m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
@@ -327,8 +337,11 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	m_pic.GetBitmap(&bmp);
 	dc.SetStretchBltMode(COLORONCOLOR);
 
-	double img_ratio = m_image2.GetHeight() / m_image2.GetWidth();
-	double img_ratio_r = m_image2.GetWidth() / m_image2.GetHeight();
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double img_ratio_r = img_width / img_height;
 	
 	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 	{
@@ -354,8 +367,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		}
 	}
 
-	loc_x = Rect.left - ((show_w * m_pos - show_w) / 2);
-	loc_y = Rect.top - ((show_h * m_pos - show_h) / 2);
 	dc.StretchBlt(
 		abs(Rect.Width() - show_w) / 2 + (show_w - show_w * m_pos) / 2, 
 		abs(Rect.Height() - show_h) / 2 + (show_h - show_h * m_pos) / 2, 
@@ -367,7 +378,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		bmp.bmWidth, 
 		bmp.bmHeight, 
 		SRCCOPY);
-	//dc.StretchBlt(loc_x, loc_y, show_w*m_pos, show_h*m_pos, &memoryDC, Rect.left, Rect.top, 500, 500, SRCCOPY);//new
 	
 	//show_w *= m_pos;
 	//show_h *= m_pos;

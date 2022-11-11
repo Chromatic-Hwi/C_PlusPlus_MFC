@@ -67,4 +67,5 @@ public:
 	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	CStatic m_pic;
 	
+	CListBox m_ratio_list2;
 };
