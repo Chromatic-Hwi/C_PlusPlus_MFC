@@ -229,9 +229,35 @@ void CViewerTempDlg::OnMenuFileOpen()
 				show_h = Rect.Height();
 			}
 		}
-		//dc.StretchBlt(Rect.left, Rect.top, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);//new original
-		dc.StretchBlt(abs(Rect.Width()-show_w)/2, abs(Rect.Height()-show_h)/2, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌,
+		
+		/*
+		BOOL StrechBlt(
+			1)표시 외부 프레임의 좌상단 x좌표,
+			2)표시 외부 프레임의 좌상단 y좌표,
+			3)표시 외부 프레임의 가로 폭,
+			4)표시 외부 프레임의 세로 폭,
+			소스 장치 컨텍스트 지정,
+			a)내부 출력 이미지 좌상단 x 좌표,
+			b)내부 출력 이미지 좌상단 y좌표,
+			c)내부 출력 이미지의 너비,
+			d)내부 출력 이미지의 높이,
+			옵션)
+		*/
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
+
+		dc.StretchBlt(
+			abs(Rect.Width()-show_w)/2, 
+			abs(Rect.Height()-show_h)/2, 
+			origin_w, 
+			origin_h, 
+			&memoryDC, 
+			0, 
+			0, 
+			img_width, 
+			img_height,
+			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
+
+		
 
 		CString ratioData = _T("");
 		ratioData.Format(_T("H/W : %.3f"), img_ratio);
@@ -303,8 +329,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 		m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
 	}
 	else
-	{
-	}
+	{}
 }
 
 
@@ -367,20 +392,20 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		}
 	}
 
+	origin_w = show_w, origin_h = show_h;
+
 	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2 + (show_w - show_w * m_pos) / 2, 
-		abs(Rect.Height() - show_h) / 2 + (show_h - show_h * m_pos) / 2, 
-		show_w*m_pos, 
-		show_h*m_pos, 
-		&memoryDC, 
-		0, 
-		0, 
-		bmp.bmWidth, 
-		bmp.bmHeight, 
+		abs(Rect.Width() - show_w) / 2,
+		abs(Rect.Height() - show_h) / 2,
+		origin_w,
+		origin_h,
+		&memoryDC,
+		0-(show_w / m_pos - show_w)/2,
+		0-(show_h / m_pos - show_h)/2,
+		img_width / m_pos,
+		img_height / m_pos,
 		SRCCOPY);
-	
-	//show_w *= m_pos;
-	//show_h *= m_pos;
+
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
@@ -396,7 +421,6 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	m_img_size.AddString(imgData);
 	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 
-	origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 

@@ -13,11 +13,10 @@ public:
 	CPoint m_ptMouse;
 	CRect Rect;
 	float m_pos = 1.f;
-	double origin_w, origin_h;
+	int origin_w, origin_h;
 	double rect_w_center, rect_h_center;
 	double loc_x, loc_y;
 	double show_w, show_h;
-
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
