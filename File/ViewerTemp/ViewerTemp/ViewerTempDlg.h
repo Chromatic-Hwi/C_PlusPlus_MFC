@@ -11,7 +11,8 @@ class CViewerTempDlg : public CDialogEx
 public:
 	CViewerTempDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 	CPoint m_ptMouse;
-	float m_pos = 1;
+	CRect Rect;
+	float m_pos = 1.f;
 	double origin_w, origin_h;
 	double rect_w_center, rect_h_center;
 	double loc_x, loc_y;
@@ -31,6 +32,9 @@ private:
 	CListBox m_loc_x_list;
 	CListBox m_loc_y_list;
 	CListBox m_ratio_list;
+
+	CListBox m_wnd_size;
+	CListBox m_img_size;
 	
 // 구현입니다.
 protected:
@@ -63,4 +67,5 @@ public:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	CStatic m_pic;
+	
 };
