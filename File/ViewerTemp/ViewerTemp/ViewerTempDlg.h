@@ -17,7 +17,6 @@ public:
 	double rect_w_center, rect_h_center;
 	double loc_x, loc_y;
 	double show_w, show_h;
-	double rect_width, rect_height;
 
 
 // 대화 상자 데이터입니다.
