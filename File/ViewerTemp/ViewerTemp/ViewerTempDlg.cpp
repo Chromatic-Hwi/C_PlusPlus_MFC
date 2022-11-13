@@ -243,6 +243,9 @@ void CViewerTempDlg::OnMenuFileOpen()
 		*/
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
+		loc_x = 0 - (show_w / m_pos - show_w) / 2;
+		loc_y = 0 - (show_h / m_pos - show_h) / 2;
+
 		dc.StretchBlt(
 			abs(Rect.Width()-show_w)/2, 
 			abs(Rect.Height()-show_h)/2, 
@@ -254,8 +257,6 @@ void CViewerTempDlg::OnMenuFileOpen()
 			img_width, 
 			img_height,
 			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
-
-		
 
 		CString ratioData = _T("");
 		ratioData.Format(_T("H/W : %.3f"), img_ratio);
@@ -389,6 +390,9 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		}
 	}
 
+	loc_x = 0 - (show_w / m_pos - show_w) / 2;
+	loc_y = 0 - (show_h / m_pos - show_h) / 2;
+
 	origin_w = show_w, origin_h = show_h;
 
 	dc.StretchBlt(
@@ -397,8 +401,8 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		origin_w,
 		origin_h,
 		&memoryDC,
-		0-(show_w / m_pos - show_w)/2,
-		0-(show_h / m_pos - show_h)/2,
+		loc_x,
+		loc_y,
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
@@ -640,12 +644,12 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_x.SetScrollPos(pos_x + move_x);
-		loc_x -= move_x;
+		loc_x += move_x;
 	}
 	else if (nSBCode == SB_LINEUP) 
 	{
 		m_bar_x.SetScrollPos(pos_x - move_x);
-		loc_x += move_x;
+		loc_x -= move_x;
 	}
 	else if (nSBCode == SB_THUMBTRACK) 
 	{
@@ -653,13 +657,66 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		// 바가 증가되는지 감소되는지 다시 경우를 나누는게 맞나?
 		loc_x += pos_x;
 	}
+
 	RedrawWindow();
-	CPaintDC dc(this);
-	CRect Rect;
+	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	GetClientRect(&Rect);
+	picturebox->GetClientRect(Rect);
+	CClientDC dc(picturebox);
 	CImage m_image2;
 	m_image2.Load(filepath);
-	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
+	CBitmap m_pic;
+	m_pic.Attach(m_image2);
+	CDC memoryDC;
+	memoryDC.CreateCompatibleDC(&dc);
+	memoryDC.SelectObject(m_pic);
+	BITMAP bmp;
+	m_pic.GetBitmap(&bmp);
+	dc.SetStretchBltMode(COLORONCOLOR);
+
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double img_ratio_r = img_width / img_height;
+
+	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
+	{
+		show_h = Rect.Height();
+		show_w = Rect.Height() * img_ratio;
+
+		if (show_w <= Rect.Width()) {}
+		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+		{
+			show_w = Rect.Width();
+			show_h = Rect.Width() * img_ratio_r;
+		}
+	}
+	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+	{
+		show_w = Rect.Width();
+		show_h = Rect.Width() * img_ratio;
+		if (show_h <= Rect.Height()) {}
+		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+		{
+			show_h = Rect.Height();
+			show_w = Rect.Height() * img_ratio_r;
+		}
+	}
+
+	origin_w = show_w, origin_h = show_h;
+
+	dc.StretchBlt(
+		abs(Rect.Width() - show_w) / 2,
+		abs(Rect.Height() - show_h) / 2,
+		origin_w,
+		origin_h,
+		&memoryDC,
+		loc_x,
+		loc_y,
+		img_width / m_pos,
+		img_height / m_pos,
+		SRCCOPY);
 	}
 
 
@@ -673,25 +730,78 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	if (nSBCode == SB_LINEDOWN)
 	{
 		m_bar_y.SetScrollPos(pos_y + move_y);
-		loc_y -= move_y;
+		loc_y += move_y;
 	}
 	else if (nSBCode == SB_LINEUP)
 	{
 		m_bar_y.SetScrollPos(pos_y - move_y);
-		loc_y += move_y;
+		loc_y -= move_y;
 	}
 	else if (nSBCode == SB_THUMBTRACK)
 	{
 		m_bar_y.SetScrollPos(nPos);
-		loc_y -= pos_y;
+		loc_y += pos_y;
 	}
+
 	RedrawWindow();
-	CPaintDC dc(this);
-	CRect Rect;
+	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	GetClientRect(&Rect);
+	picturebox->GetClientRect(Rect);
+	CClientDC dc(picturebox);
 	CImage m_image2;
 	m_image2.Load(filepath);
-	m_image2.Draw(dc, loc_x, loc_y, show_w, show_h);
+	CBitmap m_pic;
+	m_pic.Attach(m_image2);
+	CDC memoryDC;
+	memoryDC.CreateCompatibleDC(&dc);
+	memoryDC.SelectObject(m_pic);
+	BITMAP bmp;
+	m_pic.GetBitmap(&bmp);
+	dc.SetStretchBltMode(COLORONCOLOR);
+
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double img_ratio_r = img_width / img_height;
+
+	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
+	{
+		show_h = Rect.Height();
+		show_w = Rect.Height() * img_ratio;
+
+		if (show_w <= Rect.Width()) {}
+		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+		{
+			show_w = Rect.Width();
+			show_h = Rect.Width() * img_ratio_r;
+		}
+	}
+	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+	{
+		show_w = Rect.Width();
+		show_h = Rect.Width() * img_ratio;
+		if (show_h <= Rect.Height()) {}
+		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+		{
+			show_h = Rect.Height();
+			show_w = Rect.Height() * img_ratio_r;
+		}
+	}
+
+	origin_w = show_w, origin_h = show_h;
+
+	dc.StretchBlt(
+		abs(Rect.Width() - show_w) / 2,
+		abs(Rect.Height() - show_h) / 2,
+		origin_w,
+		origin_h,
+		&memoryDC,
+		loc_x,
+		loc_y,
+		img_width / m_pos,
+		img_height / m_pos,
+		SRCCOPY);
 }
 
 
