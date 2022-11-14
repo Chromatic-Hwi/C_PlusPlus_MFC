@@ -30,7 +30,6 @@ private:
 	CListBox m_loc_x_list;
 	CListBox m_loc_y_list;
 	CListBox m_ratio_list;
-
 	CListBox m_wnd_size;
 	CListBox m_img_size;
 	
@@ -55,6 +54,10 @@ public:
 	CString filepath;
 	CScrollBar m_bar_x;
 	CScrollBar m_bar_y;
+	CStatic m_pic;
+	bool m_bDragFlag;
+	CListBox m_ratio_list2;
+	int capture_x, capture_y;
 
 	afx_msg void OnMenuFileReset();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
@@ -64,7 +67,6 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	CStatic m_pic;
-	
-	CListBox m_ratio_list2;
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };

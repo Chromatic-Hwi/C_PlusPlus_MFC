@@ -87,6 +87,8 @@ ON_WM_VSCROLL()
 //ON_WM_ERASEBKGND()
 ON_WM_LBUTTONDOWN()
 ON_WM_LBUTTONUP()
+ON_WM_LBUTTONDOWN()
+ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 
@@ -300,7 +302,7 @@ void CViewerTempDlg::OnMenuFileReset() //메뉴의 초기화 탭
 }
 
 
-void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출력
+void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동에 따른 커서 좌표 출력
 {
 	m_ptMouse = point;
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -326,6 +328,69 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 커서 좌표 출
 		m_loc_y_list.AddString(strDataY);
 		m_loc_x_list.SetCurSel(m_loc_x_list.GetCount() - 1);
 		m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
+
+		if (m_bDragFlag) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
+		{
+			RedrawWindow();
+			CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
+			GetClientRect(&Rect);
+			picturebox->GetClientRect(Rect);
+			CClientDC dc(picturebox);
+			CImage m_image2;
+			m_image2.Load(filepath);
+			CBitmap m_pic;
+			m_pic.Attach(m_image2);
+			CDC memoryDC;
+			memoryDC.CreateCompatibleDC(&dc);
+			memoryDC.SelectObject(m_pic);
+			BITMAP bmp;
+			m_pic.GetBitmap(&bmp);
+			dc.SetStretchBltMode(COLORONCOLOR);
+
+			double img_width, img_height;
+			img_width = m_image2.GetWidth();
+			img_height = m_image2.GetHeight();
+			double img_ratio = img_height / img_width;
+			double img_ratio_r = img_width / img_height;
+
+			if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
+			{
+				show_h = Rect.Height();
+				show_w = Rect.Height() * img_ratio;
+
+				if (show_w <= Rect.Width()) {}
+				else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+				{
+					show_w = Rect.Width();
+					show_h = Rect.Width() * img_ratio_r;
+				}
+			}
+			else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+			{
+				show_w = Rect.Width();
+				show_h = Rect.Width() * img_ratio;
+				if (show_h <= Rect.Height()) {}
+				else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+				{
+					show_h = Rect.Height();
+					show_w = Rect.Height() * img_ratio_r;
+				}
+			}
+
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				loc_x + (capture_x - Mx),
+				loc_y + (capture_y - My),
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+		}
 	}
 	else{}
 }
@@ -808,10 +873,22 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 /*
 BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 {
-	bool state=false;
-	return TRUE;
+	//return TRUE;
 	//return CDialogEx::OnEraseBkgnd(pDC);
+	return FALSE;
+}*/
+
+
+void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	//SetCapture(); ->? 
+	capture_x = m_ptMouse.x - 19;
+	capture_y = m_ptMouse.y - 19;
+	m_bDragFlag = true;
 }
-*/
 
 
+void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	m_bDragFlag = false;
+}
