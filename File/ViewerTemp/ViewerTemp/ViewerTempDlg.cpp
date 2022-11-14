@@ -230,23 +230,41 @@ void CViewerTempDlg::OnMenuFileOpen()
 			}
 		}
 		
-		/*
-		BOOL StrechBlt(
-			1)표시 외부 프레임의 좌상단 x좌표,
-			2)표시 외부 프레임의 좌상단 y좌표,
-			3)표시 외부 프레임의 가로 폭,
-			4)표시 외부 프레임의 세로 폭,
-			소스 장치 컨텍스트 지정,
-			a)내부 출력 이미지 좌상단 x 좌표,
-			b)내부 출력 이미지 좌상단 y좌표,
-			c)내부 출력 이미지의 너비,
-			d)내부 출력 이미지의 높이,
-			옵션)
-		*/
 		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
 		loc_x = 0 - (show_w / m_pos - show_w) / 2;
 		loc_y = 0 - (show_h / m_pos - show_h) / 2;
+
+		// For Double Buffering
+		/*
+		//CClientDC dc(GetDlgItem(IDC_PIC));
+		CRect rect;
+		GetDlgItem(IDC_PIC)->GetClientRect(&Rect);
+		CDC memDC;
+		CBitmap* pOldBitmap, bitmap;
+		memDC.CreateCompatibleDC(&dc);
+		bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+		pOldBitmap = memDC.SelectObject(&bitmap);
+		memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
+		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+		memDC.SelectObject(pOldBitmap);
+
+		memDC.DeleteDC();
+		bitmap.DeleteObject();
+		*/
+		CRect rect;
+		GetDlgItem(IDC_PIC)->GetClientRect(&Rect);
+		CDC memDC;
+		CBitmap* pOldBitmap, bitmap;
+		memDC.CreateCompatibleDC(&dc);
+		bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+		pOldBitmap = memDC.SelectObject(&bitmap);
+		memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
+		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+		memDC.SelectObject(pOldBitmap);
+
+		memDC.DeleteDC();
+		bitmap.DeleteObject();
 
 		dc.StretchBlt(
 			abs(Rect.Width()-show_w)/2, 
@@ -291,6 +309,13 @@ void CViewerTempDlg::OnBnClickedOk() // 초기화 버튼
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
+
+	m_pos = 1.0f;
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 }
 
 
@@ -299,6 +324,13 @@ void CViewerTempDlg::OnMenuFileReset() //메뉴의 초기화 탭
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
+
+	m_pos = 1.0f;
+	CString intData = _T("");
+	intData.Format(_T("배율 : %.01f배"), m_pos);
+	m_ratio_list.DeleteString(0);
+	m_ratio_list.AddString(intData);
+	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 }
 
 
@@ -331,7 +363,6 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 
 		if (m_bDragFlag) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
 		{
-			RedrawWindow();
 			CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 			GetClientRect(&Rect);
 			picturebox->GetClientRect(Rect);
@@ -378,6 +409,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 			}
 
 			origin_w = show_w, origin_h = show_h;
+			RedrawWindow();
 
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
