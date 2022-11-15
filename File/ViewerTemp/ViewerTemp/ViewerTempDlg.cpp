@@ -84,7 +84,7 @@ ON_BN_CLICKED(IDC_UP_BTN, &CViewerTempDlg::OnBnClickedUpBtn)
 ON_BN_CLICKED(IDC_DOWN_BTN, &CViewerTempDlg::OnBnClickedDownBtn)
 ON_WM_HSCROLL()
 ON_WM_VSCROLL()
-//ON_WM_ERASEBKGND()
+ON_WM_ERASEBKGND()
 ON_WM_LBUTTONDOWN()
 ON_WM_LBUTTONUP()
 ON_WM_LBUTTONDOWN()
@@ -147,9 +147,10 @@ void CViewerTempDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-
 	}
-	else{}
+	else
+	{
+	}
 }
 
 
@@ -375,6 +376,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 				img_width / m_pos,
 				img_height / m_pos,
 				SRCCOPY);
+			//Invalidate(FALSE);
 		}
 	}
 	else{}
@@ -844,13 +846,15 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 }
 
 
-/*
+
 BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 {
-	//return TRUE;
-	//return CDialogEx::OnEraseBkgnd(pDC);
-	return FALSE;
-}*/
+	CRect rect;
+	GetClientRect(&rect);
+	pDC->FillSolidRect(&rect, RGB(255, 255, 255));
+
+	return TRUE;
+}
 
 
 void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
