@@ -58,6 +58,7 @@ public:
 	bool m_bDragFlag;
 	CListBox m_ratio_list2;
 	int capture_x, capture_y;
+	int Mx, My;
 
 	afx_msg void OnMenuFileReset();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
@@ -66,7 +67,7 @@ public:
 	afx_msg void OnBnClickedDownBtn();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	//afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };

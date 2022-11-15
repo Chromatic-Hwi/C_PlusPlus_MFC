@@ -147,22 +147,7 @@ void CViewerTempDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		/*
-		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
 
-		//SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 아이콘을 그립니다.
-		dc.DrawIcon(x, y, m_hIcon);
-		*/
 	}
 	else{}
 }
@@ -235,37 +220,6 @@ void CViewerTempDlg::OnMenuFileOpen()
 		loc_x = 0 - (show_w / m_pos - show_w) / 2;
 		loc_y = 0 - (show_h / m_pos - show_h) / 2;
 
-		// For Double Buffering
-		/*
-		//CClientDC dc(GetDlgItem(IDC_PIC));
-		CRect rect;
-		GetDlgItem(IDC_PIC)->GetClientRect(&Rect);
-		CDC memDC;
-		CBitmap* pOldBitmap, bitmap;
-		memDC.CreateCompatibleDC(&dc);
-		bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
-		pOldBitmap = memDC.SelectObject(&bitmap);
-		memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
-		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-		memDC.SelectObject(pOldBitmap);
-
-		memDC.DeleteDC();
-		bitmap.DeleteObject();
-		*/
-		CRect rect;
-		GetDlgItem(IDC_PIC)->GetClientRect(&Rect);
-		CDC memDC;
-		CBitmap* pOldBitmap, bitmap;
-		memDC.CreateCompatibleDC(&dc);
-		bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
-		pOldBitmap = memDC.SelectObject(&bitmap);
-		memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
-		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-		memDC.SelectObject(pOldBitmap);
-
-		memDC.DeleteDC();
-		bitmap.DeleteObject();
-
 		dc.StretchBlt(
 			abs(Rect.Width()-show_w)/2, 
 			abs(Rect.Height()-show_h)/2, 
@@ -277,6 +231,9 @@ void CViewerTempDlg::OnMenuFileOpen()
 			img_width, 
 			img_height,
 			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
+
+		memoryDC.DeleteDC();
+		m_pic.DeleteObject();
 
 		CString ratioData = _T("");
 		ratioData.Format(_T("H/W : %.3f"), img_ratio);
@@ -343,7 +300,6 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 	GetClientRect(&Rect);
 	picturebox->GetClientRect(Rect);
 
-	int Mx, My;
 	Mx = m_ptMouse.x - 19;
 	My = m_ptMouse.y - 19;
 
@@ -409,7 +365,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 			}
 
 			origin_w = show_w, origin_h = show_h;
-			RedrawWindow();
+			//RedrawWindow();
 
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
@@ -422,6 +378,9 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 				img_width / m_pos,
 				img_height / m_pos,
 				SRCCOPY);
+
+			memoryDC.DeleteDC();
+			m_pic.DeleteObject();
 		}
 	}
 	else{}
@@ -441,7 +400,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 	m_ratio_list.AddString(intData);
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 
-	RedrawWindow();
+	//RedrawWindow();
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC)); 
 	GetClientRect(&Rect);
 	picturebox->GetClientRect(Rect);
@@ -504,6 +463,9 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		img_height / m_pos,
 		SRCCOPY);
 
+	memoryDC.DeleteDC();
+	m_pic.DeleteObject();
+
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
@@ -535,7 +497,7 @@ void CViewerTempDlg::OnBnClickedUpBtn() // 배율 증가 버튼
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	RedrawWindow();
+	//RedrawWindow();
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	GetClientRect(&Rect);
 	picturebox->GetClientRect(Rect);
@@ -594,6 +556,9 @@ void CViewerTempDlg::OnBnClickedUpBtn() // 배율 증가 버튼
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
+
+	memoryDC.DeleteDC();
+	m_pic.DeleteObject();
 
 	CString wndData = _T(""); // Wnd 사이즈
 	wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
@@ -624,7 +589,7 @@ void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
 		m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 	}
 
-	RedrawWindow();
+	//RedrawWindow();
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	GetClientRect(&Rect);
 	picturebox->GetClientRect(Rect);
@@ -683,6 +648,9 @@ void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
+
+	memoryDC.DeleteDC();
+	m_pic.DeleteObject();
 
 	CString wndData = _T(""); // Wnd 사이즈
 	wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
@@ -755,7 +723,7 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		loc_x += pos_x;
 	}
 
-	RedrawWindow();
+	//RedrawWindow();
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	GetClientRect(&Rect);
 	picturebox->GetClientRect(Rect);
@@ -814,6 +782,10 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
+
+	memoryDC.DeleteDC();
+	m_pic.DeleteObject();
+
 	}
 
 
@@ -899,6 +871,9 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
+
+	memoryDC.DeleteDC();
+	m_pic.DeleteObject();
 }
 
 
@@ -923,4 +898,9 @@ void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
 void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	m_bDragFlag = false;
+	Mx = m_ptMouse.x - 19;
+	My = m_ptMouse.y - 19;
+	loc_x += (capture_x - Mx);
+	loc_y += (capture_y - My);
+
 }
