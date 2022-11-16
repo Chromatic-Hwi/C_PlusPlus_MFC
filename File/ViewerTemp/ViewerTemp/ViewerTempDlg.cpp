@@ -317,7 +317,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 		m_loc_x_list.SetCurSel(m_loc_x_list.GetCount() - 1);
 		m_loc_y_list.SetCurSel(m_loc_y_list.GetCount() - 1);
 
-		if (m_bDragFlag) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
+		if (m_bDragFlag && m_pos >= 1.f) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
 		{
 			CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 			picturebox->GetClientRect(Rect);
@@ -445,6 +445,9 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 
 	origin_w = show_w, origin_h = show_h;
 
+	if (m_pos < 1.f){RedrawWindow();}
+	else{}
+
 	dc.StretchBlt(
 		abs(Rect.Width() - show_w) / 2,
 		abs(Rect.Height() - show_h) / 2,
@@ -456,6 +459,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 �
 		img_width / m_pos,
 		img_height / m_pos,
 		SRCCOPY);
+	
 
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
@@ -620,6 +624,9 @@ void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
 	}
 
 	origin_w = show_w, origin_h = show_h;
+
+	if (m_pos < 1.f) { RedrawWindow(); }
+	else {}
 
 	dc.StretchBlt(
 		abs(Rect.Width() - show_w) / 2,
