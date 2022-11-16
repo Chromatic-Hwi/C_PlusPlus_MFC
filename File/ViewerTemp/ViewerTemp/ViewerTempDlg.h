@@ -56,6 +56,7 @@ public:
 	CScrollBar m_bar_y;
 	CStatic m_pic;
 	bool m_bDragFlag;
+	bool m_first_show;
 	CListBox m_ratio_list2;
 	int capture_x, capture_y;
 	int Mx, My;

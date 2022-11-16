@@ -123,7 +123,7 @@ BOOL CViewerTempDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-	//m_image.Load(L"TestCard.PNG");
+	m_first_show = true;
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -376,7 +376,9 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 				img_width / m_pos,
 				img_height / m_pos,
 				SRCCOPY);
+
 			//Invalidate(FALSE);
+			m_first_show = false;
 		}
 	}
 	else{}
@@ -874,9 +876,72 @@ void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	m_bDragFlag = false;
-	Mx = m_ptMouse.x - 19;
-	My = m_ptMouse.y - 19;
-	loc_x += (capture_x - Mx);
-	loc_y += (capture_y - My);
+	if (m_first_show == false)
+	{
+		RedrawWindow();
+
+		CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
+		picturebox->GetClientRect(Rect);
+		CClientDC dc(picturebox);
+		CImage m_image2;
+		m_image2.Load(filepath);
+		CBitmap m_pic;
+		m_pic.Attach(m_image2);
+		CDC memoryDC;
+		memoryDC.CreateCompatibleDC(&dc);
+		memoryDC.SelectObject(m_pic);
+		BITMAP bmp;
+		m_pic.GetBitmap(&bmp);
+		dc.SetStretchBltMode(COLORONCOLOR);
+
+		double img_width, img_height;
+		img_width = m_image2.GetWidth();
+		img_height = m_image2.GetHeight();
+		double img_ratio = img_height / img_width;
+		double img_ratio_r = img_width / img_height;
+
+		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
+		{
+			show_h = Rect.Height();
+			show_w = Rect.Height() * img_ratio;
+
+			if (show_w <= Rect.Width()) {}
+			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+			{
+				show_w = Rect.Width();
+				show_h = Rect.Width() * img_ratio_r;
+			}
+		}
+		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+		{
+			show_w = Rect.Width();
+			show_h = Rect.Width() * img_ratio;
+			if (show_h <= Rect.Height()) {}
+			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+			{
+				show_h = Rect.Height();
+				show_w = Rect.Height() * img_ratio_r;
+			}
+		}
+
+		origin_w = show_w, origin_h = show_h;
+
+		dc.StretchBlt(
+			abs(Rect.Width() - show_w) / 2,
+			abs(Rect.Height() - show_h) / 2,
+			origin_w,
+			origin_h,
+			&memoryDC,
+			loc_x + (capture_x - Mx),
+			loc_y + (capture_y - My),
+			img_width / m_pos,
+			img_height / m_pos,
+			SRCCOPY);
+
+		m_bDragFlag = false;
+		Mx = m_ptMouse.x - 19;
+		My = m_ptMouse.y - 19;
+		loc_x += (capture_x - Mx);
+		loc_y += (capture_y - My);
+	}
 }
