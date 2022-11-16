@@ -1,6 +1,4 @@
-﻿
-// ViewerTempDlg.cpp: 구현 파일
-//
+﻿// ViewerTempDlg.cpp: 구현 파일
 
 #include "pch.h"
 #include "framework.h"
@@ -13,15 +11,11 @@
 #define new DEBUG_NEW
 #endif
 
-
-// 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
-
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
@@ -29,14 +23,12 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
-// 구현입니다.
 protected:
 	DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
-{
-}
+{}
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -45,10 +37,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
-
-
-// CViewerTempDlg 대화 상자
-
 
 CViewerTempDlg::CViewerTempDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VIEWERTEMP_DIALOG, pParent)
@@ -91,16 +79,10 @@ ON_WM_LBUTTONDOWN()
 ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
-
-// CViewerTempDlg 메시지 처리기
-
 BOOL CViewerTempDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
-
-	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -117,17 +99,13 @@ BOOL CViewerTempDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
-	//  프레임워크가 이 작업을 자동으로 수행합니다.
-	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
-	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	m_first_show = true; // PictureControl에 이미지가 처음 출력될 때 마우스 클릭 다운 메세지가 실행되지 않도록 하기 위한 변수.
 
-	m_first_show = true;
-
-	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+	return TRUE; 
 }
-
 
 void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -142,7 +120,6 @@ void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-
 void CViewerTempDlg::OnPaint()
 {
 	if (IsIconic())
@@ -153,13 +130,20 @@ void CViewerTempDlg::OnPaint()
 	}
 }
 
-
 HCURSOR CViewerTempDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+/*
+void CViewerTempDlg::OnUserFuncImgNSize()
+{
+}
+*/
+int func(int x, int y)
+{
+	return 0;
+}
 void CViewerTempDlg::OnMenuFileOpen()
 {
 	CFileDialog dlg(TRUE);
