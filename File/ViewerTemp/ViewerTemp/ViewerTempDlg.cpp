@@ -273,6 +273,21 @@ void CViewerTempDlg::OnBnClickedOk() // 초기화 버튼
 	m_ratio_list.DeleteString(0);
 	m_ratio_list.AddString(intData);
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+	CString ratioData = _T("");
+	m_ratio_list2.DeleteString(0);
+	m_ratio_list2.AddString(ratioData);
+	m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+
+	CString wndData = _T("");
+	m_wnd_size.DeleteString(0);
+	m_wnd_size.AddString(wndData);
+	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+	CString imgData = _T("");
+	m_img_size.DeleteString(0);
+	m_img_size.AddString(imgData);
+	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 }
 
 
@@ -288,6 +303,21 @@ void CViewerTempDlg::OnMenuFileReset() //메뉴의 초기화 탭
 	m_ratio_list.DeleteString(0);
 	m_ratio_list.AddString(intData);
 	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+	CString ratioData = _T("");
+	m_ratio_list2.DeleteString(0);
+	m_ratio_list2.AddString(ratioData);
+	m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+
+	CString wndData = _T("");
+	m_wnd_size.DeleteString(0);
+	m_wnd_size.AddString(wndData);
+	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+	CString imgData = _T("");
+	m_img_size.DeleteString(0);
+	m_img_size.AddString(imgData);
+	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 }
 
 
@@ -680,6 +710,12 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
 	m_pic.GetBitmap(&bmp);
 	dc.SetStretchBltMode(COLORONCOLOR);
 	dc.StretchBlt(abs(Rect.Width()-show_w)/2, abs(Rect.Height()-show_h)/2, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+
+	CString imgData = _T("");
+	imgData.Format(_T(" %.0f * %.0f"), show_w, show_h);
+	m_img_size.DeleteString(0);
+	m_img_size.AddString(imgData);
+	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
