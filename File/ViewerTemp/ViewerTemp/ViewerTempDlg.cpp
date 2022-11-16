@@ -135,15 +135,79 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-/*
-void CViewerTempDlg::OnUserFuncImgNSize()
+
+void CViewerTempDlg::ImageNSize(char part)
 {
+	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
+	picturebox->GetClientRect(Rect);
+	CClientDC dc(picturebox);
+	CImage m_image2;
+	m_image2.Load(filepath);
+	CBitmap m_pic;
+	m_pic.Attach(m_image2);
+	CDC memoryDC;
+	memoryDC.CreateCompatibleDC(&dc);
+	memoryDC.SelectObject(m_pic);
+	BITMAP bmp;
+	m_pic.GetBitmap(&bmp);
+	dc.SetStretchBltMode(COLORONCOLOR);
+
+	double img_width, img_height;
+	img_width = m_image2.GetWidth();
+	img_height = m_image2.GetHeight();
+	double img_ratio = img_height / img_width;
+	double img_ratio_r = img_width / img_height;
+
+	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
+	{
+		show_w = Rect.Height() * img_ratio;
+		show_h = Rect.Height();
+
+		if (show_w <= Rect.Width()) {}
+		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
+		{
+			show_w = Rect.Width();
+			show_h = Rect.Width() * img_ratio_r;
+		}
+	}
+	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
+	{
+		show_w = Rect.Width();
+		show_h = Rect.Width() * img_ratio;
+
+		if (show_h <= Rect.Height()) {}
+		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
+		{
+			show_w = Rect.Height() * img_ratio_r;
+			show_h = Rect.Height();
+		}
+	}
+
+	/*
+	OnMenuFileOpen
+	OnBnClickedOk -> CString Only
+	OnMenuFileReset -> CString Only
+	OnMouseMove
+	OnMouseWheel
+	OnBnClickedUpBtn
+	OnBnClickedDownBtn
+	OnBnClickedOriginBtn
+	OnHScroll
+	OnVScroll
+	OnLButtonUp
+	loc, origin 이 있냐 없냐
+	*/
+
+	switch (part)
+		case 0:
+			// 0
+		case 1:
+			// 1
+		case 2:
+			//
 }
-*/
-int func(int x, int y)
-{
-	return 0;
-}
+
+
 void CViewerTempDlg::OnMenuFileOpen()
 {
 	CFileDialog dlg(TRUE);
