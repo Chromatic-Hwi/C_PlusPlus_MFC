@@ -71,5 +71,5 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int cap_y, int Mx, int My);
+	double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int cap_y);
 };
