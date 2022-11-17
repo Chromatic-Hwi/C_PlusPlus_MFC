@@ -184,27 +184,65 @@ void CViewerTempDlg::ImageNSize(char part)
 	}
 
 	/*
-	OnMenuFileOpen
-	OnBnClickedOk -> CString Only
-	OnMenuFileReset -> CString Only
-	OnMouseMove
-	OnMouseWheel
-	OnBnClickedUpBtn
-	OnBnClickedDownBtn
-	OnBnClickedOriginBtn
-	OnHScroll
-	OnVScroll
-	OnLButtonUp
+	00 OnMenuFileOpen
+	01 OnBnClickedOk -> CString Only
+	02 OnMenuFileReset -> CString Only
+	03 OnMouseMove
+	04 OnMouseWheel
+	05 OnBnClickedUpBtn
+	06 OnBnClickedDownBtn
+	07 OnBnClickedOriginBtn
+	08 OnHScroll
+	09 OnVScroll
+	10 OnLButtonUp
 	loc, origin 이 있냐 없냐
 	*/
+	loc_x = 0 - (show_w / m_pos - show_w) / 2;
+	loc_y = 0 - (show_h / m_pos - show_h) / 2;
 
 	switch (part)
-		case 0:
-			// 0
-		case 1:
-			// 1
-		case 2:
-			//
+	{
+	case 0:
+		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
+
+		dc.StretchBlt(
+			abs(Rect.Width() - show_w) / 2,
+			abs(Rect.Height() - show_h) / 2,
+			origin_w,
+			origin_h,
+			&memoryDC,
+			0,
+			0,
+			img_width,
+			img_height,
+			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
+
+		memoryDC.DeleteDC();
+		m_pic.DeleteObject();
+
+		break;
+	case 1:
+		// 1
+	case 2:
+		//
+	case 3:
+		//
+	case 4:
+		//
+	case 5:
+		//
+	case 6:
+		//
+	case 7:
+		//
+	case 8:
+		//
+	case 9:
+		//
+	case 10:
+		//
+		break;
+	}
 }
 
 
