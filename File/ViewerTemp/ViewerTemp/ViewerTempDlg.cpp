@@ -136,7 +136,7 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 }
 
 
-void CViewerTempDlg::ImageNSize(char part)
+void CViewerTempDlg::ImageNSize(int part)
 {
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	picturebox->GetClientRect(Rect);
@@ -202,51 +202,231 @@ void CViewerTempDlg::ImageNSize(char part)
 
 	switch (part)
 	{
-	case 0:
-		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
+		case 0:
+		{
+			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
-		dc.StretchBlt(
-			abs(Rect.Width() - show_w) / 2,
-			abs(Rect.Height() - show_h) / 2,
-			origin_w,
-			origin_h,
-			&memoryDC,
-			0,
-			0,
-			img_width,
-			img_height,
-			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				0,
+				0,
+				img_width,
+				img_height,
+				SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
 
-		memoryDC.DeleteDC();
-		m_pic.DeleteObject();
+			memoryDC.DeleteDC();
+			m_pic.DeleteObject();
 
-		break;
-	case 1:
-		// 1
-	case 2:
-		//
-	case 3:
-		//
-	case 4:
-		//
-	case 5:
-		//
-	case 6:
-		//
-	case 7:
-		//
-	case 8:
-		//
-	case 9:
-		//
-	case 10:
-		//
-		break;
+			CString ratioData = _T("");
+			ratioData.Format(_T("H/W : %.3f"), img_ratio);
+			m_ratio_list2.DeleteString(0);
+			m_ratio_list2.AddString(ratioData);
+			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+
+			CString wndData = _T("");
+			ratioData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+			m_wnd_size.DeleteString(0);
+			m_wnd_size.AddString(wndData);
+			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+			CString imgData = _T("");
+			imgData.Format(_T(" %.0f * %.0f"), show_w, show_h);
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+
+			break;
+		}
+		case 12:
+		{
+			m_pos = 1.0f;
+			CString intData = _T("");
+			intData.Format(_T("배율 : %.01f배"), m_pos);
+			m_ratio_list.DeleteString(0);
+			m_ratio_list.AddString(intData);
+			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+			CString ratioData = _T("");
+			m_ratio_list2.DeleteString(0);
+			m_ratio_list2.AddString(ratioData);
+			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+
+			CString wndData = _T("");
+			m_wnd_size.DeleteString(0);
+			m_wnd_size.AddString(wndData);
+			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+			CString imgData = _T("");
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+
+			break;
+		}
+		case 3:
+		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				loc_x + (capture_x - Mx),
+				loc_y + (capture_y - My),
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			break;
+		}
+		case 4:
+		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				loc_x,
+				loc_y,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			CString intData = _T("");
+			intData.Format(_T("배율 : %.01f배"), m_pos);
+			m_ratio_list.DeleteString(0);
+			m_ratio_list.AddString(intData);
+			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+			CString wndData = _T(""); // Wnd 사이즈
+			wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+			m_wnd_size.DeleteString(0);
+			m_wnd_size.AddString(wndData);
+			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+			CString imgData = _T(""); // 이미지 사이즈
+			imgData.Format(_T(" %.0f * %.0f"), show_w* m_pos, show_h* m_pos);
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+
+			break;
+		}
+		case 5:
+		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				0 - (show_w / m_pos - show_w) / 2,
+				0 - (show_h / m_pos - show_h) / 2,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			CString intData = _T("");
+			intData.Format(_T("배율 : %.01f배"), m_pos);
+			m_ratio_list.DeleteString(0);
+			m_ratio_list.AddString(intData);
+			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+			CString wndData = _T(""); // Wnd 사이즈
+			wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+			m_wnd_size.DeleteString(0);
+			m_wnd_size.AddString(wndData);
+			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+			CString imgData = _T(""); // 이미지 사이즈
+			imgData.Format(_T(" %.0f * %.0f"), show_w* m_pos, show_h* m_pos);
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+			break;
+		}
+		case 6:
+		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				0 - (show_w / m_pos - show_w) / 2,
+				0 - (show_h / m_pos - show_h) / 2,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			CString wndData = _T(""); // Wnd 사이즈
+			wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+			m_wnd_size.DeleteString(0);
+			m_wnd_size.AddString(wndData);
+			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
+
+			CString imgData = _T(""); // 이미지 사이즈
+			imgData.Format(_T(" %.0f * %.0f"), show_w * m_pos, show_h * m_pos);
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+
+			break;
+		}
+		case 7:
+		{
+			CString intData = _T("");
+			intData.Format(_T("배율 : %.01f배"), m_pos);
+			m_ratio_list.DeleteString(0);
+			m_ratio_list.AddString(intData);
+			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
+			dc.StretchBlt(abs(Rect.Width() - show_w) / 2, abs(Rect.Height() - show_h) / 2, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+
+			CString imgData = _T("");
+			imgData.Format(_T(" %.0f * %.0f"), show_w, show_h);
+			m_img_size.DeleteString(0);
+			m_img_size.AddString(imgData);
+			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+
+			break;
+		}
+		case 8910:
+		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				loc_x,
+				loc_y,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			break;
+		}
 	}
 }
 
 
-void CViewerTempDlg::OnMenuFileOpen()
+void CViewerTempDlg::OnMenuFileOpen() // case 00
 {
 	CFileDialog dlg(TRUE);
 	UINT ok = dlg.DoModal(); // 파일 열기 창 표시
@@ -256,88 +436,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 		RedrawWindow();
 		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 
-		CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC)); 
-		picturebox->GetClientRect(Rect);
-		CClientDC dc(picturebox);
-		CImage m_image2;
-		m_image2.Load(filepath);
-		CBitmap m_pic;
-		m_pic.Attach(m_image2);
-		CDC memoryDC;
-		memoryDC.CreateCompatibleDC(&dc);
-		memoryDC.SelectObject(m_pic);
-		BITMAP bmp;
-		m_pic.GetBitmap(&bmp);
-		dc.SetStretchBltMode(COLORONCOLOR);
-
-		double img_width, img_height;
-		img_width = m_image2.GetWidth();
-		img_height = m_image2.GetHeight();
-		double img_ratio = img_height / img_width;
-		double img_ratio_r = img_width / img_height;
-		
-		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-		{
-			show_w = Rect.Height() * img_ratio;
-			show_h = Rect.Height();
-			
-			if (show_w <= Rect.Width()){}
-			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-			{
-				show_w = Rect.Width();
-				show_h = Rect.Width() * img_ratio_r;
-			}
-		}
-		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio;
-
-			if (show_h <= Rect.Height()){}
-			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-			{
-				show_w = Rect.Height() * img_ratio_r;
-				show_h = Rect.Height();
-			}
-		}
-		
-		origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
-
-		loc_x = 0 - (show_w / m_pos - show_w) / 2;
-		loc_y = 0 - (show_h / m_pos - show_h) / 2;
-
-		dc.StretchBlt(
-			abs(Rect.Width()-show_w)/2, 
-			abs(Rect.Height()-show_h)/2, 
-			origin_w, 
-			origin_h, 
-			&memoryDC, 
-			0, 
-			0, 
-			img_width, 
-			img_height,
-			SRCCOPY); // 이미지가 전체 윈도우 대비 여백이 있을 때 중앙으로 옮겨줌.
-
-		memoryDC.DeleteDC();
-		m_pic.DeleteObject();
-
-		CString ratioData = _T("");
-		ratioData.Format(_T("H/W : %.3f"), img_ratio);
-		m_ratio_list2.DeleteString(0);
-		m_ratio_list2.AddString(ratioData);
-		m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
-
-		CString wndData = _T("");
-		ratioData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
-		m_wnd_size.DeleteString(0);
-		m_wnd_size.AddString(wndData);
-		m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-		CString imgData = _T("");
-		imgData.Format(_T(" %.0f * %.0f"), show_w, show_h);
-		m_img_size.DeleteString(0);
-		m_img_size.AddString(imgData);
-		m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+		CViewerTempDlg::ImageNSize(0);
 
 		m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 		m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
@@ -347,67 +446,28 @@ void CViewerTempDlg::OnMenuFileOpen()
 }
 
 
-void CViewerTempDlg::OnBnClickedOk() // 초기화 버튼
+void CViewerTempDlg::OnBnClickedOk() // case 01
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 
-	m_pos = 1.0f;
-	CString intData = _T("");
-	intData.Format(_T("배율 : %.01f배"), m_pos);
-	m_ratio_list.DeleteString(0);
-	m_ratio_list.AddString(intData);
-	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
-
-	CString ratioData = _T("");
-	m_ratio_list2.DeleteString(0);
-	m_ratio_list2.AddString(ratioData);
-	m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
-
-	CString wndData = _T("");
-	m_wnd_size.DeleteString(0);
-	m_wnd_size.AddString(wndData);
-	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-	CString imgData = _T("");
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+	CViewerTempDlg::ImageNSize(12);
+	
 }
 
 
-void CViewerTempDlg::OnMenuFileReset() //메뉴의 초기화 탭
+void CViewerTempDlg::OnMenuFileReset() // case 02
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 
-	m_pos = 1.0f;
-	CString intData = _T("");
-	intData.Format(_T("배율 : %.01f배"), m_pos);
-	m_ratio_list.DeleteString(0);
-	m_ratio_list.AddString(intData);
-	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
-
-	CString ratioData = _T("");
-	m_ratio_list2.DeleteString(0);
-	m_ratio_list2.AddString(ratioData);
-	m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
-
-	CString wndData = _T("");
-	m_wnd_size.DeleteString(0);
-	m_wnd_size.AddString(wndData);
-	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-	CString imgData = _T("");
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+	CViewerTempDlg::ImageNSize(12);
 }
 
 
-void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동에 따른 커서 좌표 출력
+void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // case 03
 {
 	m_ptMouse = point;
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -435,63 +495,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 
 		if (m_bDragFlag && m_pos >= 1.f) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
 		{
-			CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-			picturebox->GetClientRect(Rect);
-			CClientDC dc(picturebox);
-			CImage m_image2;
-			m_image2.Load(filepath);
-			CBitmap m_pic;
-			m_pic.Attach(m_image2);
-			CDC memoryDC;
-			memoryDC.CreateCompatibleDC(&dc);
-			memoryDC.SelectObject(m_pic);
-			BITMAP bmp;
-			m_pic.GetBitmap(&bmp);
-			dc.SetStretchBltMode(COLORONCOLOR);
-
-			double img_width, img_height;
-			img_width = m_image2.GetWidth();
-			img_height = m_image2.GetHeight();
-			double img_ratio = img_height / img_width;
-			double img_ratio_r = img_width / img_height;
-
-			if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-			{
-				show_h = Rect.Height();
-				show_w = Rect.Height() * img_ratio;
-
-				if (show_w <= Rect.Width()) {}
-				else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-				{
-					show_w = Rect.Width();
-					show_h = Rect.Width() * img_ratio_r;
-				}
-			}
-			else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-			{
-				show_w = Rect.Width();
-				show_h = Rect.Width() * img_ratio;
-				if (show_h <= Rect.Height()) {}
-				else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-				{
-					show_h = Rect.Height();
-					show_w = Rect.Height() * img_ratio_r;
-				}
-			}
-
-			origin_w = show_w, origin_h = show_h;
-
-			dc.StretchBlt(
-				abs(Rect.Width() - show_w) / 2,
-				abs(Rect.Height() - show_h) / 2,
-				origin_w,
-				origin_h,
-				&memoryDC,
-				loc_x + (capture_x - Mx),
-				loc_y + (capture_y - My),
-				img_width / m_pos,
-				img_height / m_pos,
-				SRCCOPY);
+			CViewerTempDlg::ImageNSize(3);
 
 			//Invalidate(FALSE);
 			m_first_show = false;
@@ -501,188 +505,37 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // 마우스 이동�
 }
 
 
-BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // 휠 가변 배율 출력
+BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // case 04
 {
 	if (zDelta > 0) // 휠 인
 	{if(m_pos < 40) m_pos += 0.1f;}
 	else //휠 아웃
 	{if (m_pos >= 0.1f) m_pos -= 0.1f;} // 최소 배율을 제한해주어야 이미지 사이즈가 음수가 되서 강제종료되는 것을 방지할 수 있음.
-	
-	CString intData = _T("");
-	intData.Format(_T("배율 : %.01f배"), m_pos);
-	m_ratio_list.DeleteString(0);
-	m_ratio_list.AddString(intData);
-	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
-
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double img_ratio_r = img_width / img_height;
-	
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-	{
-		show_h = Rect.Height();
-		show_w = Rect.Height() * img_ratio;
-
-		if (show_w <= Rect.Width()){}
-		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio_r;
-		}
-	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-	{
-		show_w = Rect.Width();
-		show_h = Rect.Width() * img_ratio;
-		if (show_h <= Rect.Height()){}
-		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio_r;
-		}
-	}
-
-	loc_x = 0 - (show_w / m_pos - show_w) / 2;
-	loc_y = 0 - (show_h / m_pos - show_h) / 2;
-
-	origin_w = show_w, origin_h = show_h;
 
 	if (m_pos < 1.f){RedrawWindow();}
 	else{}
 
-	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2,
-		abs(Rect.Height() - show_h) / 2,
-		origin_w,
-		origin_h,
-		&memoryDC,
-		loc_x,
-		loc_y,
-		img_width / m_pos,
-		img_height / m_pos,
-		SRCCOPY);
-	
-
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CString wndData = _T(""); // Wnd 사이즈
-	wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
-	m_wnd_size.DeleteString(0);
-	m_wnd_size.AddString(wndData);
-	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-	CString imgData = _T(""); // 이미지 사이즈
-	imgData.Format(_T(" %.0f * %.0f"), show_w*m_pos, show_h*m_pos);
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+	CViewerTempDlg::ImageNSize(4);
 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 
-void CViewerTempDlg::OnBnClickedUpBtn() // 배율 증가 버튼
+void CViewerTempDlg::OnBnClickedUpBtn() // case 05
 {
 	m_pos += 1.0f;
-	CString intData = _T("");
-	intData.Format(_T("배율 : %.01f배"), m_pos);
-	m_ratio_list.DeleteString(0);
-	m_ratio_list.AddString(intData);
-	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
-
+	
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double img_ratio_r = img_width / img_height;
-
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-	{
-		show_h = Rect.Height();
-		show_w = Rect.Height() * img_ratio;
-
-		if (show_w <= Rect.Width()) {}
-		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio_r;
-		}
-	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-	{
-		show_w = Rect.Width();
-		show_h = Rect.Width() * img_ratio;
-		if (show_h <= Rect.Height()) {}
-		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio_r;
-		}
-	}
-
-	origin_w = show_w, origin_h = show_h;
-
-	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2,
-		abs(Rect.Height() - show_h) / 2,
-		origin_w,
-		origin_h,
-		&memoryDC,
-		0 - (show_w / m_pos - show_w) / 2,
-		0 - (show_h / m_pos - show_h) / 2,
-		img_width / m_pos,
-		img_height / m_pos,
-		SRCCOPY);
-
-	CString wndData = _T(""); // Wnd 사이즈
-	wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
-	m_wnd_size.DeleteString(0);
-	m_wnd_size.AddString(wndData);
-	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-	CString imgData = _T(""); // 이미지 사이즈
-	imgData.Format(_T(" %.0f * %.0f"), show_w * m_pos, show_h * m_pos);
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+	CViewerTempDlg::ImageNSize(5);
 }
 
 
-void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
+void CViewerTempDlg::OnBnClickedDownBtn() // case 06
 {
 	if (m_pos > 0)
 	{
@@ -697,120 +550,28 @@ void CViewerTempDlg::OnBnClickedDownBtn() // 배율 감소
 		m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 	}
 
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double img_ratio_r = img_width / img_height;
-
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-	{
-		show_h = Rect.Height();
-		show_w = Rect.Height() * img_ratio;
-
-		if (show_w <= Rect.Width()) {}
-		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio_r;
-		}
-	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-	{
-		show_w = Rect.Width();
-		show_h = Rect.Width() * img_ratio;
-		if (show_h <= Rect.Height()) {}
-		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio_r;
-		}
-	}
-
-	origin_w = show_w, origin_h = show_h;
-
 	if (m_pos < 1.f) { RedrawWindow(); }
 	else {}
 
-	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2,
-		abs(Rect.Height() - show_h) / 2,
-		origin_w,
-		origin_h,
-		&memoryDC,
-		0 - (show_w / m_pos - show_w) / 2,
-		0 - (show_h / m_pos - show_h) / 2,
-		img_width / m_pos,
-		img_height / m_pos,
-		SRCCOPY);
-
-	CString wndData = _T(""); // Wnd 사이즈
-	wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
-	m_wnd_size.DeleteString(0);
-	m_wnd_size.AddString(wndData);
-	m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
-
-	CString imgData = _T(""); // 이미지 사이즈
-	imgData.Format(_T(" %.0f * %.0f"), show_w * m_pos, show_h * m_pos);
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
+	CViewerTempDlg::ImageNSize(6);
 }
 
 
-void CViewerTempDlg::OnBnClickedOriginBtn() // 원본 비율 출력
+void CViewerTempDlg::OnBnClickedOriginBtn() // case 07
 {
 	RedrawWindow();
 	m_pos = 1.0f;
-	CString intData = _T("");
-	intData.Format(_T("배율 : %.01f배"), m_pos);
-	m_ratio_list.DeleteString(0);
-	m_ratio_list.AddString(intData);
-	m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
-
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-	dc.StretchBlt(abs(Rect.Width()-show_w)/2, abs(Rect.Height()-show_h)/2, show_w, show_h, &memoryDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
-
-	CString imgData = _T("");
-	imgData.Format(_T(" %.0f * %.0f"), show_w, show_h);
-	m_img_size.DeleteString(0);
-	m_img_size.AddString(imgData);
-	m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
+
+	CViewerTempDlg::ImageNSize(7);
 }
 
 
-void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // 횡스크롤바
+void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // case 08
 {
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 	int pos_x, move_x;
@@ -834,67 +595,11 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		loc_x += pos_x;
 	}
 
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double img_ratio_r = img_width / img_height;
-
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-	{
-		show_h = Rect.Height();
-		show_w = Rect.Height() * img_ratio;
-
-		if (show_w <= Rect.Width()) {}
-		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio_r;
-		}
-	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-	{
-		show_w = Rect.Width();
-		show_h = Rect.Width() * img_ratio;
-		if (show_h <= Rect.Height()) {}
-		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio_r;
-		}
-	}
-
-	origin_w = show_w, origin_h = show_h;
-
-	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2,
-		abs(Rect.Height() - show_h) / 2,
-		origin_w,
-		origin_h,
-		&memoryDC,
-		loc_x,
-		loc_y,
-		img_width / m_pos,
-		img_height / m_pos,
-		SRCCOPY);
+	CViewerTempDlg::ImageNSize(8910);
 	}
 
 
-void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // 종스크롤바
+void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // case 09
 {
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 	int pos_y, move_y;
@@ -917,63 +622,7 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		loc_y += pos_y;
 	}
 
-	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-	picturebox->GetClientRect(Rect);
-	CClientDC dc(picturebox);
-	CImage m_image2;
-	m_image2.Load(filepath);
-	CBitmap m_pic;
-	m_pic.Attach(m_image2);
-	CDC memoryDC;
-	memoryDC.CreateCompatibleDC(&dc);
-	memoryDC.SelectObject(m_pic);
-	BITMAP bmp;
-	m_pic.GetBitmap(&bmp);
-	dc.SetStretchBltMode(COLORONCOLOR);
-
-	double img_width, img_height;
-	img_width = m_image2.GetWidth();
-	img_height = m_image2.GetHeight();
-	double img_ratio = img_height / img_width;
-	double img_ratio_r = img_width / img_height;
-
-	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-	{
-		show_h = Rect.Height();
-		show_w = Rect.Height() * img_ratio;
-
-		if (show_w <= Rect.Width()) {}
-		else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio_r;
-		}
-	}
-	else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-	{
-		show_w = Rect.Width();
-		show_h = Rect.Width() * img_ratio;
-		if (show_h <= Rect.Height()) {}
-		else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio_r;
-		}
-	}
-
-	origin_w = show_w, origin_h = show_h;
-
-	dc.StretchBlt(
-		abs(Rect.Width() - show_w) / 2,
-		abs(Rect.Height() - show_h) / 2,
-		origin_w,
-		origin_h,
-		&memoryDC,
-		loc_x,
-		loc_y,
-		img_width / m_pos,
-		img_height / m_pos,
-		SRCCOPY);
+	CViewerTempDlg::ImageNSize(8910);
 }
 
 
@@ -996,74 +645,18 @@ void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
 }
 
 
-void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
+void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) // case 10
 {
 	if (m_first_show == false)
 	{
 		RedrawWindow();
-
-		CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
-		picturebox->GetClientRect(Rect);
-		CClientDC dc(picturebox);
-		CImage m_image2;
-		m_image2.Load(filepath);
-		CBitmap m_pic;
-		m_pic.Attach(m_image2);
-		CDC memoryDC;
-		memoryDC.CreateCompatibleDC(&dc);
-		memoryDC.SelectObject(m_pic);
-		BITMAP bmp;
-		m_pic.GetBitmap(&bmp);
-		dc.SetStretchBltMode(COLORONCOLOR);
-
-		double img_width, img_height;
-		img_width = m_image2.GetWidth();
-		img_height = m_image2.GetHeight();
-		double img_ratio = img_height / img_width;
-		double img_ratio_r = img_width / img_height;
-
-		if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
-		{
-			show_h = Rect.Height();
-			show_w = Rect.Height() * img_ratio;
-
-			if (show_w <= Rect.Width()) {}
-			else // 세로비가 더 길지만, 계산된 가로 출력 길이가 Rect를 초과하는 경우. 가로 기준 제한 출력.
-			{
-				show_w = Rect.Width();
-				show_h = Rect.Width() * img_ratio_r;
-			}
-		}
-		else // ratio가 1보다 작은 경우 = 가로가 더 길다 = 가로 기준으로 출력
-		{
-			show_w = Rect.Width();
-			show_h = Rect.Width() * img_ratio;
-			if (show_h <= Rect.Height()) {}
-			else // 가로비가 더 길지만, 계산된 세로 출력 길이가 Rect를 초과하는 경우. 세로 기준 제한 출력.
-			{
-				show_h = Rect.Height();
-				show_w = Rect.Height() * img_ratio_r;
-			}
-		}
-
-		origin_w = show_w, origin_h = show_h;
-
-		dc.StretchBlt(
-			abs(Rect.Width() - show_w) / 2,
-			abs(Rect.Height() - show_h) / 2,
-			origin_w,
-			origin_h,
-			&memoryDC,
-			loc_x + (capture_x - Mx),
-			loc_y + (capture_y - My),
-			img_width / m_pos,
-			img_height / m_pos,
-			SRCCOPY);
 
 		m_bDragFlag = false;
 		Mx = m_ptMouse.x - 19;
 		My = m_ptMouse.y - 19;
 		loc_x += (capture_x - Mx);
 		loc_y += (capture_y - My);
+
+		CViewerTempDlg::ImageNSize(8910);
 	}
 }
