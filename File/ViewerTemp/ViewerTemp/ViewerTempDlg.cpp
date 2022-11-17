@@ -404,8 +404,31 @@ void CViewerTempDlg::ImageNSize(int part)
 
 			break;
 		}
-		case 8910:
+		case 89:
 		{
+			origin_w = show_w, origin_h = show_h;
+
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				origin_w,
+				origin_h,
+				&memoryDC,
+				loc_x,
+				loc_y,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
+			break;
+		}
+		case 10:
+		{
+			Mx = m_ptMouse.x - 19;
+			My = m_ptMouse.y - 19;
+			loc_x += (capture_x - Mx);
+			loc_y += (capture_y - My);
+
 			origin_w = show_w, origin_h = show_h;
 
 			dc.StretchBlt(
@@ -595,7 +618,7 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		loc_x += pos_x;
 	}
 
-	CViewerTempDlg::ImageNSize(8910);
+	CViewerTempDlg::ImageNSize(89);
 	}
 
 
@@ -622,7 +645,7 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 		loc_y += pos_y;
 	}
 
-	CViewerTempDlg::ImageNSize(8910);
+	CViewerTempDlg::ImageNSize(89);
 }
 
 
@@ -652,11 +675,7 @@ void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) // case 10
 		RedrawWindow();
 
 		m_bDragFlag = false;
-		Mx = m_ptMouse.x - 19;
-		My = m_ptMouse.y - 19;
-		loc_x += (capture_x - Mx);
-		loc_y += (capture_y - My);
-
-		CViewerTempDlg::ImageNSize(8910);
+		
+		CViewerTempDlg::ImageNSize(10);
 	}
 }
