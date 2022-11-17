@@ -122,12 +122,8 @@ void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CViewerTempDlg::OnPaint()
 {
-	if (IsIconic())
-	{
-	}
-	else
-	{
-	}
+	if (IsIconic())	{}
+	else{}
 }
 
 HCURSOR CViewerTempDlg::OnQueryDragIcon()
@@ -135,8 +131,22 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+enum Part 
+{
+	MenuFileOpen,
+	Reset,
+	MouseMove,
+	MouseWheel,
+	ClkUpBtn,
+	ClkDownBtn,
+	ClkOriginBtn,
+	Scroll,
+	LBtnUp
+};
+
+
 // UserDefineFunc
-double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int cap_y)
+double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int cap_y)
 {
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
 	picturebox->GetClientRect(Rect);
@@ -183,27 +193,14 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 		}
 	}
 
-	/*
-	00 OnMenuFileOpen
-	01 OnBnClickedOk -> CString Only
-	02 OnMenuFileReset -> CString Only
-	03 OnMouseMove
-	04 OnMouseWheel
-	05 OnBnClickedUpBtn
-	06 OnBnClickedDownBtn
-	07 OnBnClickedOriginBtn
-	08 OnHScroll
-	09 OnVScroll
-	10 OnLButtonUp
-	*/
 	if (x == NULL) { loc_x = 0 - (show_w / m_pos - show_w) / 2;	}
 	else { loc_x = x; }
 	if (y == NULL) { loc_y = 0 - (show_h / m_pos - show_h) / 2; }
 	else { loc_y = y; }
 
-	switch (part)
+	switch (name)
 	{
-		case 0:
+		case MenuFileOpen:
 		{
 			origin_w = show_w, origin_h = show_h; // 원본 배율 출력을 위한 변수 설정
 
@@ -247,7 +244,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 12:
+		case Reset:
 		{
 			m_pos = 1.0f;
 			CString intData = _T("");
@@ -272,7 +269,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 3:
+		case MouseMove:
 		{
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
@@ -288,7 +285,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 4:
+		case MouseWheel:
 		{
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
@@ -322,7 +319,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 5:
+		case ClkUpBtn:
 		{
 			origin_w = show_w, origin_h = show_h;
 
@@ -357,7 +354,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 			m_img_size.SetCurSel(m_img_size.GetCount() - 1);
 			break;
 		}
-		case 6:
+		case ClkDownBtn:
 		{
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
@@ -385,7 +382,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 7:
+		case ClkOriginBtn:
 		{
 			CString intData = _T("");
 			intData.Format(_T("배율 : %.01f배"), m_pos);
@@ -403,7 +400,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 89:
+		case Scroll:
 		{
 			dc.StretchBlt(
 				abs(Rect.Width() - show_w) / 2,
@@ -419,7 +416,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case 10:
+		case LBtnUp:
 		{
 			Mx = m_ptMouse.x - 19;
 			My = m_ptMouse.y - 19;
@@ -444,7 +441,7 @@ double CViewerTempDlg::ImageNSize(int part, double x, double y, int cap_x, int c
 	return loc_x, loc_y;
 }
 
-// case 00
+// case MenuFileOpen
 void CViewerTempDlg::OnMenuFileOpen() 
 {
 	CFileDialog dlg(TRUE);
@@ -455,7 +452,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 		RedrawWindow();
 		filepath = dlg.GetPathName(); // 전체 경로를 입력하는 함수
 
-		CViewerTempDlg::ImageNSize(0, NULL, NULL, NULL, NULL);
+		CViewerTempDlg::ImageNSize(MenuFileOpen, NULL, NULL, NULL, NULL);
 
 		m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 		m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
@@ -464,28 +461,28 @@ void CViewerTempDlg::OnMenuFileOpen()
 	}
 }
 
-// case 01
+// case Reset
 void CViewerTempDlg::OnBnClickedOk()
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 
-	CViewerTempDlg::ImageNSize(12, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(Reset, NULL, NULL, NULL, NULL);
 	
 }
 
-// case 02
+// case Reset
 void CViewerTempDlg::OnMenuFileReset() 
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 
-	CViewerTempDlg::ImageNSize(12, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(Reset, NULL, NULL, NULL, NULL);
 }
 
-// case 03
+// case MouseMove
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	m_ptMouse = point;
@@ -514,7 +511,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 		if (m_bDragFlag && m_pos >= 1.f) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
 		{
-			CViewerTempDlg::ImageNSize(3, loc_x, loc_y, capture_x, capture_y);
+			CViewerTempDlg::ImageNSize(MouseMove, loc_x, loc_y, capture_x, capture_y);
 
 			//Invalidate(FALSE);
 			m_first_show = false;
@@ -523,7 +520,7 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 	else{}
 }
 
-// case 04
+// case MouseWheel
 BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	if (zDelta > 0) // 휠 인
@@ -537,12 +534,12 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CViewerTempDlg::ImageNSize(4, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(MouseWheel, NULL, NULL, NULL, NULL);
 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-// case 05
+// case ClkUpBtn
 void CViewerTempDlg::OnBnClickedUpBtn() 
 {
 	m_pos += 1.0f;
@@ -550,10 +547,10 @@ void CViewerTempDlg::OnBnClickedUpBtn()
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CViewerTempDlg::ImageNSize(5, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(ClkUpBtn, NULL, NULL, NULL, NULL);
 }
 
-// case 06
+// case ClkDownBtn
 void CViewerTempDlg::OnBnClickedDownBtn() 
 {
 	if (m_pos > 0)
@@ -572,10 +569,10 @@ void CViewerTempDlg::OnBnClickedDownBtn()
 	if (m_pos < 1.f) { RedrawWindow(); }
 	else {}
 
-	CViewerTempDlg::ImageNSize(6, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(ClkDownBtn, NULL, NULL, NULL, NULL);
 }
 
-// case 07
+// case ClkOriginBtn
 void CViewerTempDlg::OnBnClickedOriginBtn() 
 {
 	RedrawWindow();
@@ -586,10 +583,10 @@ void CViewerTempDlg::OnBnClickedOriginBtn()
 	m_bar_x.SetScrollPos(0);
 	m_bar_y.SetScrollPos(0);
 
-	CViewerTempDlg::ImageNSize(7, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(ClkOriginBtn, NULL, NULL, NULL, NULL);
 }
 
-// case 08
+// case Scroll
 void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -614,10 +611,10 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		loc_x += pos_x;
 	}
 
-	CViewerTempDlg::ImageNSize(89, loc_x, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(Scroll, loc_x, NULL, NULL, NULL);
 	}
 
-// case 09
+// case Scroll
 void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -641,10 +638,10 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		loc_y += pos_y;
 	}
 
-	CViewerTempDlg::ImageNSize(89, NULL, loc_y, NULL, NULL);
+	CViewerTempDlg::ImageNSize(Scroll, NULL, loc_y, NULL, NULL);
 }
 
-// case 10
+// case LBtnUp
 void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) 
 {
 	if (m_first_show == false)
@@ -653,7 +650,7 @@ void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 		m_bDragFlag = false;
 		
-		CViewerTempDlg::ImageNSize(10, loc_x, loc_y, capture_x, capture_y);
+		CViewerTempDlg::ImageNSize(LBtnUp, loc_x, loc_y, capture_x, capture_y);
 	}
 }
 
