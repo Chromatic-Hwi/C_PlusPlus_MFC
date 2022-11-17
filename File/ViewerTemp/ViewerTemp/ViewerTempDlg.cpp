@@ -135,7 +135,7 @@ HCURSOR CViewerTempDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+// UserDefineFunc
 void CViewerTempDlg::ImageNSize(int part)
 {
 	CStatic* picturebox = (CStatic*)(GetDlgItem(IDC_PIC));
@@ -221,6 +221,11 @@ void CViewerTempDlg::ImageNSize(int part)
 			memoryDC.DeleteDC();
 			m_pic.DeleteObject();
 
+			CString intData = _T("배율 : 1.0배");
+			m_ratio_list.DeleteString(0);
+			m_ratio_list.AddString(intData);
+			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
+
 			CString ratioData = _T("");
 			ratioData.Format(_T("H/W : %.3f"), img_ratio);
 			m_ratio_list2.DeleteString(0);
@@ -228,7 +233,7 @@ void CViewerTempDlg::ImageNSize(int part)
 			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
 
 			CString wndData = _T("");
-			ratioData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
+			wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
 			m_wnd_size.DeleteString(0);
 			m_wnd_size.AddString(wndData);
 			m_wnd_size.SetCurSel(m_wnd_size.GetCount() - 1);
@@ -245,7 +250,6 @@ void CViewerTempDlg::ImageNSize(int part)
 		{
 			m_pos = 1.0f;
 			CString intData = _T("");
-			intData.Format(_T("배율 : %.01f배"), m_pos);
 			m_ratio_list.DeleteString(0);
 			m_ratio_list.AddString(intData);
 			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
@@ -448,8 +452,8 @@ void CViewerTempDlg::ImageNSize(int part)
 	}
 }
 
-
-void CViewerTempDlg::OnMenuFileOpen() // case 00
+// case 00
+void CViewerTempDlg::OnMenuFileOpen() 
 {
 	CFileDialog dlg(TRUE);
 	UINT ok = dlg.DoModal(); // 파일 열기 창 표시
@@ -468,8 +472,8 @@ void CViewerTempDlg::OnMenuFileOpen() // case 00
 	}
 }
 
-
-void CViewerTempDlg::OnBnClickedOk() // case 01
+// case 01
+void CViewerTempDlg::OnBnClickedOk()
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
@@ -479,8 +483,8 @@ void CViewerTempDlg::OnBnClickedOk() // case 01
 	
 }
 
-
-void CViewerTempDlg::OnMenuFileReset() // case 02
+// case 02
+void CViewerTempDlg::OnMenuFileReset() 
 {
 	RedrawWindow();
 	m_bar_x.SetScrollPos(0);
@@ -489,8 +493,8 @@ void CViewerTempDlg::OnMenuFileReset() // case 02
 	CViewerTempDlg::ImageNSize(12);
 }
 
-
-void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // case 03
+// case 03
+void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	m_ptMouse = point;
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -527,8 +531,8 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) // case 03
 	else{}
 }
 
-
-BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // case 04
+// case 04
+BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	if (zDelta > 0) // 휠 인
 	{if(m_pos < 40) m_pos += 0.1f;}
@@ -546,8 +550,8 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) // case 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-
-void CViewerTempDlg::OnBnClickedUpBtn() // case 05
+// case 05
+void CViewerTempDlg::OnBnClickedUpBtn() 
 {
 	m_pos += 1.0f;
 	
@@ -557,8 +561,8 @@ void CViewerTempDlg::OnBnClickedUpBtn() // case 05
 	CViewerTempDlg::ImageNSize(5);
 }
 
-
-void CViewerTempDlg::OnBnClickedDownBtn() // case 06
+// case 06
+void CViewerTempDlg::OnBnClickedDownBtn() 
 {
 	if (m_pos > 0)
 	{
@@ -579,8 +583,8 @@ void CViewerTempDlg::OnBnClickedDownBtn() // case 06
 	CViewerTempDlg::ImageNSize(6);
 }
 
-
-void CViewerTempDlg::OnBnClickedOriginBtn() // case 07
+// case 07
+void CViewerTempDlg::OnBnClickedOriginBtn() 
 {
 	RedrawWindow();
 	m_pos = 1.0f;
@@ -593,8 +597,8 @@ void CViewerTempDlg::OnBnClickedOriginBtn() // case 07
 	CViewerTempDlg::ImageNSize(7);
 }
 
-
-void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // case 08
+// case 08
+void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 	int pos_x, move_x;
@@ -621,8 +625,8 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CViewerTempDlg::ImageNSize(89);
 	}
 
-
-void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) // case 09
+// case 09
+void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 	int pos_y, move_y;
@@ -648,7 +652,18 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 	CViewerTempDlg::ImageNSize(89);
 }
 
+// case 10
+void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) 
+{
+	if (m_first_show == false)
+	{
+		RedrawWindow();
 
+		m_bDragFlag = false;
+		
+		CViewerTempDlg::ImageNSize(10);
+	}
+}
 
 BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 {
@@ -659,23 +674,9 @@ BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 	return TRUE;
 }
 
-
 void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	capture_x = m_ptMouse.x - 19;
 	capture_y = m_ptMouse.y - 19;
 	m_bDragFlag = true;
-}
-
-
-void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) // case 10
-{
-	if (m_first_show == false)
-	{
-		RedrawWindow();
-
-		m_bDragFlag = false;
-		
-		CViewerTempDlg::ImageNSize(10);
-	}
 }
