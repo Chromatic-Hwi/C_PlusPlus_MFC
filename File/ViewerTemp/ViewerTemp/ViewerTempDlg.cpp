@@ -25,6 +25,7 @@ public:
 
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -55,7 +56,7 @@ void CViewerTempDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PIC, m_pic);
 	DDX_Control(pDX, IDC_WND_SIZE, m_wnd_size);
 	DDX_Control(pDX, IDC_IMG_SIZE, m_img_size);
-	DDX_Control(pDX, IDC_RATIO, m_ratio_list2);
+	DDX_Control(pDX, IDC_RATIO, m_size_ratio_list);
 }
 
 BEGIN_MESSAGE_MAP(CViewerTempDlg, CDialogEx)
@@ -126,7 +127,8 @@ void CViewerTempDlg::OnSysCommand(UINT nID, LPARAM lParam)
 void CViewerTempDlg::OnPaint()
 {
 	if (IsIconic())	{}
-	else{}
+	else
+	{if (m_cursor_change){::SetCursor(theApp.LoadStandardCursor(IDC_CROSS));}}
 }
 
 HCURSOR CViewerTempDlg::OnQueryDragIcon()
@@ -172,6 +174,7 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 	double img_ratio = img_height / img_width;
 	double img_ratio_r = img_width / img_height;
 
+	// Read된 이미지 파일의 비율과 출력 기준을 정하는 부분
 	if (img_ratio >= 1.) // ratio가 1보다 큰 경우 = 세로가 더 길다 = 세로 기준으로 출력.
 	{
 		show_w = Rect.Height() * img_ratio;
@@ -230,9 +233,9 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 
 			CString ratioData = _T("");
 			ratioData.Format(_T(" H/W : %.3f"), img_ratio);
-			m_ratio_list2.DeleteString(0);
-			m_ratio_list2.AddString(ratioData);
-			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+			m_size_ratio_list.DeleteString(0);
+			m_size_ratio_list.AddString(ratioData);
+			m_size_ratio_list.SetCurSel(m_size_ratio_list.GetCount() - 1);
 
 			CString wndData = _T("");
 			wndData.Format(_T(" %d * %d"), Rect.Width(), Rect.Height());
@@ -257,9 +260,9 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 
 			CString ratioData = _T("");
-			m_ratio_list2.DeleteString(0);
-			m_ratio_list2.AddString(ratioData);
-			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
+			m_size_ratio_list.DeleteString(0);
+			m_size_ratio_list.AddString(ratioData);
+			m_size_ratio_list.SetCurSel(m_size_ratio_list.GetCount() - 1);
 
 			CString wndData = _T("");
 			m_wnd_size.DeleteString(0);
@@ -456,7 +459,7 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 				SRCCOPY);
 
 			CClientDC dc(this);
-			CPen my_pen(PS_SOLID, 3, RGB(255, 0, 0));
+			CPen my_pen(PS_SOLID, 5, RGB(255, 0, 0));
 			dc.SelectObject(&my_pen);
 			SelectObject(dc, GetStockObject(NULL_BRUSH));
 			dc.Rectangle(rect_start_pos.x, rect_start_pos.y, m_ptMouse.x, m_ptMouse.y);
@@ -700,7 +703,7 @@ BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 
 
 
-//==========================================================================================================================================
+//========================================================================================
 
 
 
@@ -720,12 +723,14 @@ void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CViewerTempDlg::OnBnClickedCaptureBtn()
 {
-	if (m_RClk == true) { m_RClk = false; }
-	else { m_RClk = true; }
+	if (m_RClk == true) 
+	{ 
+		m_RClk = false; 
+		m_cursor_change = false;
+	}
+	else 
+	{ 
+		m_RClk = true; 
+		m_cursor_change = true;
+	}
 }
-
-
-
-
-
-

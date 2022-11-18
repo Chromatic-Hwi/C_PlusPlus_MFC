@@ -56,12 +56,15 @@ public:
 	CScrollBar m_bar_x;
 	CScrollBar m_bar_y;
 	CStatic m_pic;
+	CListBox m_size_ratio_list;
+
 	bool m_bDragFlag;
 	bool m_RClk;
 	bool m_first_show;
-	CListBox m_ratio_list2;
+	bool m_cursor_change = false;
 	int capture_x, capture_y;
 	int Mx, My;
+	double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int cap_y);
 
 	afx_msg void OnMenuFileReset();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
@@ -73,7 +76,6 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int cap_y);
 	afx_msg void OnBnClickedCaptureBtn();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
