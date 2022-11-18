@@ -443,15 +443,25 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 		}
 		case LBtnUp:
 		{
-			/*
-			CDialogEx::OnLButtonDown(nFlags, point);
+			dc.StretchBlt(
+				abs(Rect.Width() - show_w) / 2,
+				abs(Rect.Height() - show_h) / 2,
+				show_w,
+				show_h,
+				&memoryDC,
+				loc_x,
+				loc_y,
+				img_width / m_pos,
+				img_height / m_pos,
+				SRCCOPY);
+
 			CClientDC dc(this);
 			CPen my_pen(PS_SOLID, 3, RGB(255, 0, 0));
 			dc.SelectObject(&my_pen);
 			SelectObject(dc, GetStockObject(NULL_BRUSH));
-			dc.Rectangle(rect_start_pos.x, rect_start_pos.y, point.x, point.y);
-			CDialogEx::OnLButtonUp(nFlags, point);
-			*/
+			dc.Rectangle(rect_start_pos.x, rect_start_pos.y, m_ptMouse.x, m_ptMouse.y);
+
+			break;
 		}
 	}
 	return loc_x, loc_y;
@@ -704,8 +714,6 @@ void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if (m_RClk)
 	{
-		
-
 		CViewerTempDlg::ImageNSize(LBtnUp, loc_x, loc_y, capture_x, capture_y);
 	}
 }
