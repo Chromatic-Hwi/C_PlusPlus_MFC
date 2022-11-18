@@ -77,6 +77,9 @@ ON_WM_LBUTTONDOWN()
 ON_WM_LBUTTONUP()
 ON_WM_LBUTTONDOWN()
 ON_WM_LBUTTONUP()
+ON_BN_CLICKED(IDC_CAPTURE_BTN, &CViewerTempDlg::OnBnClickedCaptureBtn)
+ON_WM_RBUTTONUP()
+ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 BOOL CViewerTempDlg::OnInitDialog()
@@ -141,6 +144,7 @@ enum Part
 	ClkDownBtn,
 	ClkOriginBtn,
 	Scroll,
+	RBtnUp,
 	LBtnUp
 };
 
@@ -219,13 +223,13 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 			memoryDC.DeleteDC();
 			m_pic.DeleteObject();
 
-			CString intData = _T("배율 : 1.0배");
+			CString intData = _T(" 배율 : 1.0배");
 			m_ratio_list.DeleteString(0);
 			m_ratio_list.AddString(intData);
 			m_ratio_list.SetCurSel(m_ratio_list.GetCount() - 1);
 
 			CString ratioData = _T("");
-			ratioData.Format(_T("H/W : %.3f"), img_ratio);
+			ratioData.Format(_T(" H/W : %.3f"), img_ratio);
 			m_ratio_list2.DeleteString(0);
 			m_ratio_list2.AddString(ratioData);
 			m_ratio_list2.SetCurSel(m_ratio_list2.GetCount() - 1);
@@ -416,7 +420,7 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 
 			break;
 		}
-		case LBtnUp:
+		case RBtnUp:
 		{
 			Mx = m_ptMouse.x - 19;
 			My = m_ptMouse.y - 19;
@@ -437,9 +441,22 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 
 			break;
 		}
+		case LBtnUp:
+		{
+			/*
+			CDialogEx::OnLButtonDown(nFlags, point);
+			CClientDC dc(this);
+			CPen my_pen(PS_SOLID, 3, RGB(255, 0, 0));
+			dc.SelectObject(&my_pen);
+			SelectObject(dc, GetStockObject(NULL_BRUSH));
+			dc.Rectangle(rect_start_pos.x, rect_start_pos.y, point.x, point.y);
+			CDialogEx::OnLButtonUp(nFlags, point);
+			*/
+		}
 	}
 	return loc_x, loc_y;
 }
+
 
 // case MenuFileOpen
 void CViewerTempDlg::OnMenuFileOpen() 
@@ -459,6 +476,7 @@ void CViewerTempDlg::OnMenuFileOpen()
 		m_bar_x.SetScrollPos(0);
 		m_bar_y.SetScrollPos(0);
 	}
+	m_RClk = false;
 }
 
 // case Reset
@@ -534,7 +552,7 @@ BOOL CViewerTempDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos); // 배율이 변하면 스크롤바의 이동 폭도 변해줘야 함. 예로 확대되면 그만큼 많이 이동해야 하니까.
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CViewerTempDlg::ImageNSize(MouseWheel, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(MouseWheel, loc_x, loc_y, capture_x, capture_y);
 
 	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
@@ -547,7 +565,7 @@ void CViewerTempDlg::OnBnClickedUpBtn()
 	m_bar_x.SetScrollRange(0, Rect.Width() * m_pos);
 	m_bar_y.SetScrollRange(0, Rect.Height() * m_pos);
 
-	CViewerTempDlg::ImageNSize(ClkUpBtn, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(ClkUpBtn, loc_x, loc_y, capture_x, capture_y);
 }
 
 // case ClkDownBtn
@@ -569,7 +587,7 @@ void CViewerTempDlg::OnBnClickedDownBtn()
 	if (m_pos < 1.f) { RedrawWindow(); }
 	else {}
 
-	CViewerTempDlg::ImageNSize(ClkDownBtn, NULL, NULL, NULL, NULL);
+	CViewerTempDlg::ImageNSize(ClkDownBtn, loc_x, loc_y, capture_x, capture_y);
 }
 
 // case ClkOriginBtn
@@ -641,16 +659,23 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CViewerTempDlg::ImageNSize(Scroll, NULL, loc_y, NULL, NULL);
 }
 
-// case LBtnUp
-void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point) 
+void CViewerTempDlg::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	capture_x = m_ptMouse.x - 19;
+	capture_y = m_ptMouse.y - 19;
+	m_bDragFlag = true;
+}
+
+// case RBtnUp
+void CViewerTempDlg::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	if (m_first_show == false)
 	{
 		RedrawWindow();
 
 		m_bDragFlag = false;
-		
-		CViewerTempDlg::ImageNSize(LBtnUp, loc_x, loc_y, capture_x, capture_y);
+
+		CViewerTempDlg::ImageNSize(RBtnUp, loc_x, loc_y, capture_x, capture_y);
 	}
 }
 
@@ -663,9 +688,36 @@ BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
 	return TRUE;
 }
 
+
+
+//==========================================================================================================================================
+
+
+
 void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	capture_x = m_ptMouse.x - 19;
-	capture_y = m_ptMouse.y - 19;
-	m_bDragFlag = true;
+	rect_start_pos = point;
+	CDialogEx::OnLButtonDown(nFlags, point);
 }
+
+void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	if (m_RClk)
+	{
+		
+
+		CViewerTempDlg::ImageNSize(LBtnUp, loc_x, loc_y, capture_x, capture_y);
+	}
+}
+
+void CViewerTempDlg::OnBnClickedCaptureBtn()
+{
+	if (m_RClk == true) { m_RClk = false; }
+	else { m_RClk = true; }
+}
+
+
+
+
+
+

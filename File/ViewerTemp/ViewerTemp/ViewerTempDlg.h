@@ -32,7 +32,8 @@ private:
 	CListBox m_ratio_list;
 	CListBox m_wnd_size;
 	CListBox m_img_size;
-	
+	CPoint rect_start_pos;
+
 // 구현입니다.
 protected:
 	HICON m_hIcon;
@@ -56,6 +57,7 @@ public:
 	CScrollBar m_bar_y;
 	CStatic m_pic;
 	bool m_bDragFlag;
+	bool m_RClk;
 	bool m_first_show;
 	CListBox m_ratio_list2;
 	int capture_x, capture_y;
@@ -72,4 +74,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int cap_y);
+	afx_msg void OnBnClickedCaptureBtn();
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 };
