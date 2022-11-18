@@ -81,6 +81,7 @@ ON_WM_LBUTTONUP()
 ON_BN_CLICKED(IDC_CAPTURE_BTN, &CViewerTempDlg::OnBnClickedCaptureBtn)
 ON_WM_RBUTTONUP()
 ON_WM_RBUTTONDOWN()
+ON_COMMAND(ID_FILE_SAVE, &CViewerTempDlg::OnFileSave)
 END_MESSAGE_MAP()
 
 BOOL CViewerTempDlg::OnInitDialog()
@@ -147,7 +148,8 @@ enum Part
 	ClkOriginBtn,
 	Scroll,
 	RBtnUp,
-	LBtnUp
+	LBtnUp,
+	Save
 };
 
 
@@ -466,6 +468,12 @@ double CViewerTempDlg::ImageNSize(int name, double x, double y, int cap_x, int c
 
 			break;
 		}
+		case Save:
+		{
+			CImage m_save_image;
+			
+		}
+
 	}
 	return loc_x, loc_y;
 }
@@ -502,8 +510,6 @@ void CViewerTempDlg::OnBnClickedOk()
 	CViewerTempDlg::ImageNSize(Reset, NULL, NULL, NULL, NULL);
 	
 }
-
-// case Reset
 void CViewerTempDlg::OnMenuFileReset() 
 {
 	RedrawWindow();
@@ -512,6 +518,31 @@ void CViewerTempDlg::OnMenuFileReset()
 
 	CViewerTempDlg::ImageNSize(Reset, NULL, NULL, NULL, NULL);
 }
+
+// 저장 개발중~~~~~~~
+void CViewerTempDlg::OnFileSave()
+{
+	CFileDialog dlg(FALSE, _T("bmp"), _T("SaveName"), OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT, _T("*.bmp"), NULL);
+	save_filepath = dlg.GetPathName();
+
+	if (dlg.DoModal() == IDOK)
+	{
+		//CViewerTempDlg::ImageNSize(Save, loc_x, loc_y, capture_x, capture_y);
+		HDC h_dc = ::GetWindowDC(NULL);
+		CImage save_image;
+		int cx = ::GetSystemMetrics(SM_CXSCREEN);
+		int cy = ::GetSystemMetrics(SM_CYSCREEN);
+		int color_depth = ::GetDeviceCaps(h_dc, BITSPIXEL);
+		save_image.Create(cx, cy, color_depth, 0);
+
+		::BitBlt(save_image.GetDC(), 0, 0, cx, cy, h_dc, 0, 0, SRCCOPY);
+		save_image.Save(save_filepath, Gdiplus::ImageFormatBMP);
+
+		::ReleaseDC(NULL, h_dc);
+		save_image.ReleaseDC();
+	}
+}
+
 
 // case MouseMove
 void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point) 
@@ -543,8 +574,6 @@ void CViewerTempDlg::OnMouseMove(UINT nFlags, CPoint point)
 		if (m_bDragFlag && m_pos >= 1.f) // 마우스 버튼 클릭으로 인해 TRUE로 바뀐 경우.
 		{
 			CViewerTempDlg::ImageNSize(MouseMove, loc_x, loc_y, capture_x, capture_y);
-
-			//Invalidate(FALSE);
 			m_first_show = false;
 		}
 	}
@@ -644,8 +673,6 @@ void CViewerTempDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	CViewerTempDlg::ImageNSize(Scroll, loc_x, NULL, NULL, NULL);
 	}
-
-// case Scroll
 void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -672,13 +699,6 @@ void CViewerTempDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CViewerTempDlg::ImageNSize(Scroll, NULL, loc_y, NULL, NULL);
 }
 
-void CViewerTempDlg::OnRButtonDown(UINT nFlags, CPoint point)
-{
-	capture_x = m_ptMouse.x - 19;
-	capture_y = m_ptMouse.y - 19;
-	m_bDragFlag = true;
-}
-
 // case RBtnUp
 void CViewerTempDlg::OnRButtonUp(UINT nFlags, CPoint point)
 {
@@ -692,27 +712,14 @@ void CViewerTempDlg::OnRButtonUp(UINT nFlags, CPoint point)
 	}
 }
 
-BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
+void CViewerTempDlg::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	CRect rect;
-	GetClientRect(&rect);
-	pDC->FillSolidRect(&rect, RGB(255, 255, 255));
-
-	return TRUE;
+	capture_x = m_ptMouse.x - 19;
+	capture_y = m_ptMouse.y - 19;
+	m_bDragFlag = true;
 }
 
-
-
-//========================================================================================
-
-
-
-void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	rect_start_pos = point;
-	CDialogEx::OnLButtonDown(nFlags, point);
-}
-
+// case LBtnUp
 void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if (m_RClk)
@@ -720,6 +727,13 @@ void CViewerTempDlg::OnLButtonUp(UINT nFlags, CPoint point)
 		CViewerTempDlg::ImageNSize(LBtnUp, loc_x, loc_y, capture_x, capture_y);
 	}
 }
+
+void CViewerTempDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	rect_start_pos = point;
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
 
 void CViewerTempDlg::OnBnClickedCaptureBtn()
 {
@@ -734,3 +748,16 @@ void CViewerTempDlg::OnBnClickedCaptureBtn()
 		m_cursor_change = true;
 	}
 }
+
+BOOL CViewerTempDlg::OnEraseBkgnd(CDC* pDC)
+{
+	CRect rect;
+	GetClientRect(&rect);
+	pDC->FillSolidRect(&rect, RGB(255, 255, 255));
+
+	return TRUE;
+}
+
+
+
+

@@ -53,6 +53,7 @@ public:
 	CImage m_image;
 	CImage m_image2;
 	CString filepath;
+	CString save_filepath;
 	CScrollBar m_bar_x;
 	CScrollBar m_bar_y;
 	CStatic m_pic;
@@ -79,4 +80,5 @@ public:
 	afx_msg void OnBnClickedCaptureBtn();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnFileSave();
 };
