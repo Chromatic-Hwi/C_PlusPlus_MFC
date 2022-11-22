@@ -27,6 +27,7 @@
 #define IDC_RATIO                       1021
 #define IDC_BUTTON2                     1023
 #define IDC_CAPTURE_BTN                 1026
+#define IDC_LIST1                       1027
 #define ID_FILE_OPEN32771               32771
 #define ID_FILE_RESET                   32772
 #define ID_FILE_SAVE32773               32773
@@ -37,7 +38,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32774
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
